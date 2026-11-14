@@ -1,0 +1,31 @@
+# Dar Sabbah private site
+# Family data is encrypted inside data.enc.js and needs the family password.
+# The lines below only add safety settings that IONOS webspace (Apache) supports.
+
+Options -Indexes
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive"
+  Header always set Referrer-Policy "no-referrer"
+  Header always set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# Always use https
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{SERVER_PORT} !=443
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Fetch new data after each rebuild
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|html)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+# OPTIONAL second lock (a browser login box before the page loads).
+# Only needed if you want it. See IONOS-SETUP.md, step 6, for how to fill in the path.
+# AuthType Basic
+# AuthName "Dar Sabbah"
+# AuthUserFile /homepages/XX/dXXXXXXXXX/htdocs/darsabbah/.htpasswd
+# Require valid-user

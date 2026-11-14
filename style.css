@@ -1,0 +1,101 @@
+:root{
+  --bg:#f7f3ec; --panel:#fffdf9; --ink:#2b2620; --muted:#7a6f62; --line:#e3d9ca;
+  --accent:#6b4f2a; --accent2:#3f6b4a; --chip:#efe6d7; --hi:#fff1c9; --err:#a3302a;
+  --serif:"Source Serif 4",Georgia,serif; --ar:"Noto Naskh Arabic","Geeza Pro","Arial",serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#1b1916;--panel:#24211d;--ink:#ece5da;--muted:#a79b8b;--line:#3a352e;
+  --accent:#d6b07a;--accent2:#8fc39c;--chip:#2f2b25;--hi:#4a3f22;--err:#ef8a83}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 var(--serif);-webkit-text-size-adjust:100%}
+[dir=rtl] body,[lang=ar]{font-family:var(--ar)}
+html[dir=rtl] body{font-size:19px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.muted{color:var(--muted)}
+button{font:inherit;cursor:pointer}
+
+/* lock */
+.lock{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.lockbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:32px 28px;max-width:380px;width:100%;text-align:center;box-shadow:0 8px 30px rgba(60,40,10,.08)}
+.lockbox .mark{color:var(--accent2)}
+.lockbox h1{font-size:26px;margin:8px 0 4px;line-height:1.35}
+.lockbox h1 span{font-family:var(--ar);font-size:30px}
+.lockbox input[type=password]{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;margin-top:14px}
+.lockbox button{width:100%;margin-top:12px;padding:12px;border:0;border-radius:10px;background:var(--accent);color:var(--panel);font-weight:600}
+.remember{display:block;font-size:14px;color:var(--muted);margin-top:10px}
+.err{color:var(--err);min-height:1.4em;margin:10px 0 0;font-size:15px}
+
+/* header */
+.top{position:sticky;top:0;z-index:10;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{font-weight:700;font-size:20px;color:var(--ink)}
+.top nav{display:flex;gap:14px}
+.top nav a{color:var(--muted)}
+.top nav a.on{color:var(--accent);font-weight:600}
+.searchwrap{position:relative;flex:1 1 220px;max-width:460px}
+#q{width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
+.results{position:absolute;top:calc(100% + 6px);inset-inline:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.12);max-height:70vh;overflow:auto;z-index:20}
+.results a{display:block;padding:8px 12px;border-bottom:1px solid var(--line);color:var(--ink)}
+.results a:hover,.results a.sel{background:var(--chip);text-decoration:none}
+.results small{display:block;color:var(--muted);font-size:13px;line-height:1.4}
+.lang,.ghost{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:5px 12px;font-size:15px}
+.lang{font-weight:600}
+
+main{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+main.wide{max-width:none}
+.foot{text-align:center;color:var(--muted);font-size:13px;padding:20px 16px 30px}
+
+/* person */
+.crumbs{font-size:14px;color:var(--muted);margin-bottom:10px;line-height:1.9}
+.crumbs a{color:var(--muted)}
+.crumbs .sep{margin:0 5px;opacity:.6}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:16px}
+.pname{font-size:34px;line-height:1.25;margin:0}
+.pre{display:block;font-size:16px;color:var(--muted);font-weight:400}
+.aka{color:var(--muted);font-weight:400}
+.nasab{margin:6px 0 0;color:var(--muted)}
+.facts{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:16px 0 0}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.btn{display:inline-block;padding:7px 14px;border-radius:999px;background:var(--chip);color:var(--ink);font-size:15px}
+.btn:hover{text-decoration:none;background:var(--line)}
+h2{font-size:19px;margin:0 0 10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:700px){.grid2{grid-template-columns:1fr}.pname{font-size:28px}}
+.plist{list-style:none;margin:0;padding:0}
+.plist li{padding:6px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+.plist li:last-child{border-bottom:0}
+.count{color:var(--muted);font-size:14px;white-space:nowrap}
+.notes p{margin:0 0 8px;white-space:pre-line}
+.sexF{color:var(--accent2)}
+
+/* outline tree */
+.tree ul{list-style:none;margin:0;padding-inline-start:20px;border-inline-start:1px dashed var(--line)}
+.tree>ul{padding-inline-start:0;border:0}
+.tree li{margin:2px 0}
+.tree .row{display:flex;align-items:center;gap:6px;padding:2px 4px;border-radius:6px}
+.tree .row.cur{background:var(--hi)}
+.tree .tog{width:22px;height:22px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--muted);font-size:14px;line-height:1;padding:0;flex:none}
+.tree .leaf{width:22px;flex:none;text-align:center;color:var(--line)}
+.tree .count{font-size:13px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+
+/* chart */
+.chartwrap{overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;max-height:78vh}
+.chartwrap svg{display:block}
+.chartwrap .node rect{fill:var(--bg);stroke:var(--line)}
+.chartwrap .node.cur rect{fill:var(--hi);stroke:var(--accent)}
+.chartwrap .node text{fill:var(--ink);font-size:14px}
+.chartwrap .node.F text{fill:var(--accent2)}
+.chartwrap .node:hover rect{stroke:var(--accent)}
+.chartwrap path{fill:none;stroke:var(--muted);stroke-width:1.2;opacity:.6}
+.home h1{font-size:34px;margin:0 0 6px}
+.stats{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+.stat{background:var(--chip);border-radius:12px;padding:10px 16px}
+.stat b{display:block;font-size:24px}
+@media (max-width:600px){.searchwrap{order:5;flex-basis:100%;max-width:none}.top{gap:8px 12px}.top .ghost,.top .lang{padding:4px 10px;font-size:14px}}
+@media (max-width:600px){.tree ul{padding-inline-start:12px}.tree .tog,.tree .leaf{width:20px;height:20px}}
