@@ -372,3 +372,11 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 .top nav a{white-space:nowrap}
 .prose blockquote{color:var(--ink)}
 .prose blockquote p:last-child{font-size:14px;color:var(--muted)}
+
+.homefind{display:flex;gap:18px;align-items:stretch;flex-wrap:wrap}
+.homefind>div{flex:2 1 280px}
+.valink{flex:1 1 200px;display:flex;flex-direction:column;gap:3px;justify-content:center;padding:10px 16px;border-inline-start:2px solid var(--tatreez);color:var(--ink)}
+.valink:hover{text-decoration:none}
+.valink b{font-size:16px}
+.valink span{color:var(--muted);font-size:14px}
+.valink em{font-style:normal;color:var(--accent2);font-size:13px}
