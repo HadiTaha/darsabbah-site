@@ -345,3 +345,4 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 .mapbtns .btn{padding:2px 9px;font-size:14px;min-width:0;background:var(--panel)}
 .mapchips .chip{border:0;background:var(--chip);color:var(--ink);border-radius:999px;padding:3px 12px;font-size:14px;font-family:inherit}
 .mapchips .chip:hover{background:var(--hi)}
+.mapbox:has([data-map=palestine]){max-width:440px;margin-inline:auto}
