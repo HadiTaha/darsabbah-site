@@ -19,7 +19,7 @@
       showTree: 'في الشجرة', expand: 'افتح الكل', collapse: 'أغلق الكل', people: 'شخص', gens: 'جيل',
       noRes: 'لا توجد نتائج',
       start: 'ابدأ من الجد الأعلى', find: 'ابحث عن نفسك أو عن أحد أقاربك في خانة البحث في الأعلى.',
-      built: 'آخر تحديث', private: 'موقع خاص بالعائلة. الرجاء عدم نشر كلمة السر.',
+      built: 'آخر تحديث', private: 'موقع خاص بالعائلة. الرجاء عدم نشر كلمة السر.', hideMe: 'من يرغب من الأحياء في إخفاء اسمه أو بياناته، يكفي أن يخبر هادي.',
       upTo: 'السلسلة إلى الأعلى', ancestors: 'الأجداد', wrong: 'كلمة السر غير صحيحة', needHttps: 'افتح الموقع عبر https',
       father1: 'والد', chartOf: 'ذرية', back: 'عودة إلى الصفحة', children2: 'أولاد',
       library: 'المكتبة', posts: 'مقالات', graph: 'الشجرة التفاعلية', list: 'قائمة الشجرة', write: 'كتابة مقال', edit: 'تعديل', del: 'حذف', latest: 'آخر المقالات', allPosts: 'كل المقالات', open: 'فتح', download: 'تحميل', loading: 'جارٍ التحميل…', welcome: 'أهلاً وسهلاً', libIntro: 'الوثائق والمصادر التي جمعناها عن العائلة وتاريخها.', items: 'وثيقة', pages: 'صفحة', explore: 'استكشفوا', treeCard: 'ابحثوا عن أنفسكم وعن أقاربكم في شجرة العائلة.', libCard: 'سجلات عثمانية ومقابلات وخرائط وصور اللوحة الأصلية.', postCard: 'حكايات ومكتشفات من تاريخ العائلة.', info: 'الخلفية', grove: 'البستان', back: 'رجوع', oldTitle: 'السلسلة المتوارثة قبل مصطفى', oldTag: 'رواية، غير موثّقة', oldBack: 'من مصطفى صعودًا:', infoCard: 'من هم الجبارات، ومن أين جاءت العائلة، وأين عاشت.', more: 'للمزيد', prev: 'السابق', next: 'التالي', toLib: 'إلى المكتبة', noPosts: 'لا توجد مقالات بعد.', fsOpen: 'فتح في نافذة جديدة'
@@ -32,7 +32,7 @@
       showTree: 'Show in tree', expand: 'Open all', collapse: 'Close all', people: 'people', gens: 'generations',
       noRes: 'No matches',
       start: 'Start at the earliest ancestor', find: 'Find yourself or a relative with the search box at the top.',
-      built: 'Last updated', private: 'Private family site. Please do not share the password outside the family.',
+      built: 'Last updated', private: 'Private family site. Please do not share the password outside the family.', hideMe: 'Living relatives who would like their entry hidden can simply tell Hadi.',
       upTo: 'Line upwards', ancestors: 'Ancestors', wrong: 'Wrong password', needHttps: 'Open the site over https',
       father1: 'Father of', chartOf: 'Descendants of', back: 'Back to the page', children2: 'children',
       library: 'Library', posts: 'Posts', graph: 'Interactive tree', list: 'Tree list', write: 'Write a post', edit: 'Edit', del: 'Delete', latest: 'Latest posts', allPosts: 'All posts', open: 'Open', download: 'Download', loading: 'Loading…', welcome: 'Welcome', libIntro: 'The documents and sources we have gathered about the family and its history.', items: 'documents', pages: 'pages', explore: 'Explore', treeCard: 'Find yourself and your relatives in the family tree.', libCard: 'Ottoman registers, interviews, maps and photos of the original board.', postCard: 'Stories and findings from the family history.', info: 'Background', grove: 'Grove', back: 'Back', oldTitle: 'The traditional line before Mustafa', oldTag: 'tradition, not documented', oldBack: 'From Mustafa upwards:', infoCard: 'Who the Jabbarat are, where the family came from and where it lived.', more: 'Read more', prev: 'Previous', next: 'Next', toLib: 'To the library', noPosts: 'No posts yet.', fsOpen: 'Open in a new tab'
@@ -172,7 +172,8 @@
       '<div class="card"><h2>' + t('latest') + '</h2>' + (POSTS.length ? POSTS.slice(0, 3).map(postCard).join('') : '<p class="muted">' + t('noPosts') + '</p>') +
       (POSTS.length > 3 ? '<p><a href="#/posts">' + t('allPosts') + '</a></p>' : '') + '</div>' +
       '<div class="card"><p>' + t('find') + '</p><div class="actions">' + '<a class="btn" href="#/p/' + root + '">' + t('start') + ': ' + esc(nm(P[root])) + '</a>' +
-      '<a class="btn" href="#/chart/' + root + '">' + t('chart') + '</a></div></div>';
+      '<a class="btn" href="#/chart/' + root + '">' + t('chart') + '</a></div></div>' +
+      '<p class="muted hideme">' + t('hideMe') + '</p>';
   }
   var ICON = {
     tree: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22v-9M12 13c-3 0-5-2-6-5M12 11c3 0 5-2 6-5M12 13V7"/><circle cx="6" cy="7" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="4" r="2"/></svg>',
@@ -583,7 +584,7 @@
     $('q').placeholder = t('search');
     $('lang').textContent = t('lang');
     $('logout').textContent = t('logout');
-    $('foot').textContent = t('private') + ' ' + t('built') + ': ' + BUILT;
+    $('foot').textContent = t('private') + ' ' + t('hideMe') + ' ' + t('built') + ': ' + BUILT;
   }
   window.DS = {
     routes: {},
@@ -664,6 +665,7 @@
   $('lockform').addEventListener('submit', function (e) {
     e.preventDefault(); $('lockerr').textContent = '';
     var btn = document.querySelector('.enter'); btn.classList.add('busy'); setTimeout(function () { btn.classList.remove('busy'); }, 1500);
+    try { localStorage.setItem('ds-agreed', new Date().toISOString().slice(0, 10)); } catch (x) {}
     tryOpen($('pw').value, $('remember').checked, false);
   });
   $('eye').onclick = function () { var i = $('pw'); i.type = i.type === 'password' ? 'text' : 'password'; i.focus(); };

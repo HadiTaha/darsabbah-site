@@ -298,3 +298,7 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 .backbtn{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:5px 12px;font:inherit;font-size:14px;cursor:pointer}
 .backbtn:hover{border-color:var(--accent)}
 @media (max-width:600px){.treetabs a{padding:6px 12px;font-size:14px}.graphtabs{padding:8px 12px 0}}
+
+.remember.agree{margin-top:10px;max-width:340px;margin-inline:auto}
+.remember.agree>span>span{font-size:14px}
+.hideme{text-align:center;font-size:14px;margin:6px 0 0}
