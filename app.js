@@ -412,7 +412,8 @@
       '<button class="btn" type="button" data-z="fit">↔</button><span class="pinfo muted"></span>' +
       '<a class="btn" href="' + url + '" target="_blank" rel="noopener">' + t('fsOpen') + '</a></div><div class="pdfview"><div class="pdfpages"></div></div>';
     var view = m.querySelector('.pdfview'), pages = m.querySelector('.pdfpages'), zoom = 1, doc = null, timer = null;
-    var MAXPX = 4096, gen = 0;
+    var MAXPX = 4096, gen = 0, dgen = 0, dtimer = null, PG = {};
+    // base: whole page, capped so phones can hold it; detail: only the visible part, at full sharpness
     function render() {
       if (!doc) return;
       var my = ++gen;
@@ -423,29 +424,60 @@
       for (var i = 1; i <= doc.numPages; i++) jobs.push(i);
       return jobs.reduce(function (pr, n) {
         return pr.then(function () { if (my !== gen) throw 'stale'; return doc.getPage(n); }).then(function (pg) {
+          PG[n] = pg;
           var base = pg.getViewport({scale: 1});
           var cssW = cw * zoom, scale = Math.min(cssW * dpr / base.width, MAXPX / Math.max(base.width, base.height));
           var vp = pg.getViewport({scale: scale});
-          var c = pages.querySelector('canvas[data-n="' + n + '"]');
-          if (!c) { c = document.createElement('canvas'); c.setAttribute('data-n', n); pages.appendChild(c); }
+          var w = pages.querySelector('.pp[data-n="' + n + '"]');
+          if (!w) {
+            w = document.createElement('div'); w.className = 'pp'; w.setAttribute('data-n', n);
+            w.style.aspectRatio = base.width + ' / ' + base.height;
+            w.innerHTML = '<canvas class="pbase"></canvas><canvas class="pdet"></canvas>';
+            pages.appendChild(w);
+          }
+          var c = w.querySelector('.pbase');
           if (c.width === Math.floor(vp.width)) return;
           var tmp = document.createElement('canvas'); tmp.width = Math.floor(vp.width); tmp.height = Math.floor(vp.height);
           return pg.render({canvasContext: tmp.getContext('2d'), viewport: vp}).promise.then(function () {
             if (my !== gen) throw 'stale';
             c.width = tmp.width; c.height = tmp.height; c.getContext('2d').drawImage(tmp, 0, 0);
-            c.style.width = '100%'; c.style.height = 'auto';
           });
         });
-      }, Promise.resolve()).catch(function (e) { if (e !== 'stale') throw e; });
+      }, Promise.resolve()).then(detail).catch(function (e) { if (e !== 'stale') throw e; });
     }
+    function detail() {
+      if (!doc) return;
+      var my = ++dgen, dpr = window.devicePixelRatio || 1, vr = view.getBoundingClientRect();
+      pages.querySelectorAll('.pp').forEach(function (w) {
+        var n = +w.getAttribute('data-n'), pg = PG[n], det = w.querySelector('.pdet'), bc = w.querySelector('.pbase');
+        if (!pg) return;
+        var r = w.getBoundingClientRect(), base = pg.getViewport({scale: 1});
+        var full = r.width * dpr / base.width;
+        var x0 = Math.max(0, vr.left - r.left), y0 = Math.max(0, vr.top - r.top);
+        var x1 = Math.min(r.width, vr.right - r.left), y1 = Math.min(r.height, vr.bottom - r.top);
+        // the base is sharp enough, or the page is off screen
+        if (bc.width >= base.width * full * 0.95 || x1 <= x0 || y1 <= y0) { det.style.display = 'none'; return; }
+        var pw = Math.min(MAXPX, Math.ceil((x1 - x0) * dpr)), ph = Math.min(MAXPX, Math.ceil((y1 - y0) * dpr));
+        var vp = pg.getViewport({scale: full});
+        var tmp = document.createElement('canvas'); tmp.width = pw; tmp.height = ph;
+        pg.render({canvasContext: tmp.getContext('2d'), viewport: vp, transform: [1, 0, 0, 1, -x0 * dpr, -y0 * dpr]}).promise.then(function () {
+          if (my !== dgen) return;
+          det.width = pw; det.height = ph; det.getContext('2d').drawImage(tmp, 0, 0);
+          det.style.left = x0 + 'px'; det.style.top = y0 + 'px'; det.style.width = (pw / dpr) + 'px'; det.style.height = (ph / dpr) + 'px';
+          det.style.display = 'block';
+        }, function () {});
+      });
+    }
+    view.addEventListener('scroll', function () { clearTimeout(dtimer); dtimer = setTimeout(detail, 180); }, {passive: true});
     function setZoom(z, cx, cy) {
-      var old = zoom; zoom = Math.max(0.5, Math.min(8, z));
+      var old = zoom; zoom = Math.max(0.5, Math.min(16, z));
       var rx = (view.scrollLeft + (cx == null ? view.clientWidth / 2 : cx)) / (pages.offsetWidth || 1);
       var ry = (view.scrollTop + (cy == null ? view.clientHeight / 2 : cy)) / (pages.offsetHeight || 1);
       pages.style.width = Math.round((view.clientWidth - 16) * zoom) + 'px';
       m.querySelector('.pz').textContent = Math.round(zoom * 100) + '%';
       view.scrollLeft = rx * pages.offsetWidth - (cx == null ? view.clientWidth / 2 : cx);
       view.scrollTop = ry * pages.offsetHeight - (cy == null ? view.clientHeight / 2 : cy);
+      pages.querySelectorAll('.pdet').forEach(function (d) { d.style.display = 'none'; });
       clearTimeout(timer); timer = setTimeout(render, 250);
     }
     m.querySelector('.pdfbar').onclick = function (e) {
