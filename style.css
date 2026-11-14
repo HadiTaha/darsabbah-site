@@ -330,3 +330,18 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 .homemap .hmtext b{font-size:19px}
 .homemap .hmtext span{color:var(--muted);font-size:15px}
 .homemap .hmtext em{font-style:normal;color:var(--accent2);font-size:14px}
+
+.mapbox{border:1.5px solid var(--border);border-radius:14px;margin:14px 0;background:var(--panel);overflow:hidden}
+.mapbox>summary{list-style:none;cursor:pointer;padding:10px 16px;font-weight:700;font-size:18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
+.mapbox>summary::-webkit-details-marker{display:none}
+.mapbox>summary::after{content:'▾';color:var(--muted);transition:transform .2s}
+.mapbox:not([open])>summary{border-bottom:0}
+.mapbox:not([open])>summary::after{transform:rotate(-90deg)}
+[dir=rtl] .mapbox:not([open])>summary::after{transform:rotate(90deg)}
+.mapbox .dsmap{margin:0;padding:12px}
+.mapzoom{position:relative;border-radius:10px;overflow:hidden;touch-action:none}
+.mapzoom svg{cursor:grab}
+.mapbtns{position:absolute;bottom:8px;inset-inline-end:8px;display:flex;gap:6px}
+.mapbtns .btn{padding:2px 9px;font-size:14px;min-width:0;background:var(--panel)}
+.mapchips .chip{border:0;background:var(--chip);color:var(--ink);border-radius:999px;padding:3px 12px;font-size:14px;font-family:inherit}
+.mapchips .chip:hover{background:var(--hi)}

@@ -36,15 +36,37 @@
   }
   function world(el, geo, places) {
     var land = topojson.feature(geo, geo.objects.countries);
-    var W = 960, H = 500;
+    var W = 960, H = 500, BASE = 26;
     var proj = d3.geoNaturalEarth1().fitExtent([[6, 6], [W - 6, H - 6]], {type: 'Sphere'}), path = d3.geoPath(proj);
     var marks = places.map(function (p) {
-      var xy = proj([p.lon, p.lat]), s = 22;
-      return '<use class="mk" href="#sprig" x="' + (xy[0] - s / 2) + '" y="' + (xy[1] - s / 2) + '" width="' + s + '" height="' + s + '"><title>' + DS.esc(name(p)) + '</title></use>';
+      var xy = proj([p.lon, p.lat]);
+      return '<g class="mk" data-x="' + xy[0] + '" data-y="' + xy[1] + '" transform="translate(' + xy[0] + ',' + xy[1] + ')"><use href="#sprig" x="' + (-BASE / 2) + '" y="' + (-BASE / 2) + '" width="' + BASE + '" height="' + BASE + '"/><title>' + DS.esc(name(p)) + '</title></g>';
     }).join('');
-    el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="mapsvg wld" style="direction:ltr"><defs>' + SPRIG + '</defs>' +
-      '<path class="sphere" d="' + path({type: 'Sphere'}) + '"/><path class="land" d="' + path(land) + '"/>' + marks + '</svg>' +
-      '<div class="mapchips">' + places.map(function (p) { return '<span>' + DS.esc(name(p)) + '</span>'; }).join('') + '</div>';
+    el.innerHTML = '<div class="mapzoom"><svg viewBox="0 0 ' + W + ' ' + H + '" class="mapsvg wld" style="direction:ltr"><defs>' + SPRIG + '</defs><g class="zg">' +
+      '<path class="sphere" vector-effect="non-scaling-stroke" d="' + path({type: 'Sphere'}) + '"/><path class="land" vector-effect="non-scaling-stroke" d="' + path(land) + '"/>' + marks + '</g></svg>' +
+      '<div class="mapbtns"><button type="button" class="btn zbtn" data-z="in">＋</button><button type="button" class="btn zbtn" data-z="out">−</button><button type="button" class="btn zbtn" data-z="reset">⟲</button></div></div>' +
+      '<div class="mapchips">' + places.map(function (p, i) { return '<button type="button" class="chip" data-i="' + i + '">' + DS.esc(name(p)) + '</button>'; }).join('') + '</div>';
+    var svg = d3.select(el).select('svg'), zg = svg.select('.zg'), mk = zg.selectAll('g.mk');
+    var zoom = d3.zoom().scaleExtent([1, 24]).translateExtent([[0, 0], [W, H]]).on('zoom', function (e) {
+      var k = e.transform.k;
+      zg.attr('transform', e.transform);
+      // sprigs keep a modest size on screen, so close places separate as you zoom in
+      var s = 0.55 * Math.pow(k, 0.45) / k;
+      mk.attr('transform', function () { return 'translate(' + this.getAttribute('data-x') + ',' + this.getAttribute('data-y') + ') scale(' + s + ')'; });
+    });
+    svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
+    el.querySelectorAll('.mapbtns button').forEach(function (b) {
+      b.onclick = function () {
+        var z = b.getAttribute('data-z'), t = svg.transition().duration(350);
+        if (z === 'in') t.call(zoom.scaleBy, 1.8); else if (z === 'out') t.call(zoom.scaleBy, 1 / 1.8); else t.call(zoom.transform, d3.zoomIdentity);
+      };
+    });
+    el.querySelectorAll('.mapchips .chip').forEach(function (c) {
+      c.onclick = function () {
+        var p = places[+c.getAttribute('data-i')], xy = proj([p.lon, p.lat]), k = 6;
+        svg.transition().duration(700).call(zoom.transform, d3.zoomIdentity.translate(W / 2 - xy[0] * k, H / 2 - xy[1] * k).scale(k));
+      };
+    });
   }
   DS.renderMaps = function () {
     var els = document.querySelectorAll('.dsmap'); if (!els.length || !DS.MAPS) return;
