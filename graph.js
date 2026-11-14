@@ -207,8 +207,8 @@
     if (location.hash !== '#/graph/' + id) { history.replaceState(null, '', '#/graph/' + id); DS.fixTop('#/graph/' + id); }
     var p = DS.P[id], el = document.getElementById('gpanel'); if (!el) return;
     var facts = [];
-    if (p.b && (p.b.DATE || p.b.PLAC)) facts.push(tt('born') + ': ' + [p.b.DATE, p.b.PLAC].filter(Boolean).join(', '));
-    if (p.d) facts.push(tt('died') + ': ' + ([p.d.DATE, p.d.PLAC].filter(Boolean).join(', ') || '✝'));
+    if (p.b && (p.b.DATE || p.b.PLAC)) facts.push(tt('born') + ': ' + [DS.fmtDate(p.b.DATE), p.b.PLAC].filter(Boolean).join(', '));
+    if (p.d) facts.push(tt('died') + ': ' + ([DS.fmtDate(p.d.DATE), p.d.PLAC].filter(Boolean).join(', ') || '✝'));
     var kids = p.c.filter(function (k) { return DS.P[k]; }).length;
     el.innerHTML = '<button class="gx" type="button" aria-label="close">✕</button>' +
       '<b class="' + (p.s === 'F' ? 'sexF' : '') + '">' + DS.label(p) + '</b>' +

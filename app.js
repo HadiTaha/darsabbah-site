@@ -148,9 +148,18 @@
   function setNav(k) {
     document.querySelectorAll('.top nav a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('data-k') === k); });
   }
+  function fmtDate(d) {
+    if (!d) return d;
+    var ar = LANG === 'ar', m;
+    if ((m = /^BET (.+) AND (.+)$/i.exec(d))) return ar ? 'بين ' + m[1] + ' و' + m[2] : m[1] + ' to ' + m[2];
+    if ((m = /^(ABT|EST|CAL) (.+)$/i.exec(d))) return (ar ? 'نحو ' : 'c. ') + m[2];
+    if ((m = /^BEF (.+)$/i.exec(d))) return (ar ? 'قبل ' : 'before ') + m[1];
+    if ((m = /^AFT (.+)$/i.exec(d))) return (ar ? 'بعد ' : 'after ') + m[1];
+    return d;
+  }
   function fmtEvent(e) {
     if (!e) return '';
-    return [e.DATE, e.PLAC].filter(Boolean).map(esc).join(', ') + (e.CAUS ? ' (' + esc(e.CAUS) + ')' : '') + (e.NOTE ? '<br><span class="muted">' + esc(e.NOTE) + '</span>' : '');
+    return [fmtDate(e.DATE), e.PLAC].filter(Boolean).map(esc).join(', ') + (e.CAUS ? ' (' + esc(e.CAUS) + ')' : '') + (e.NOTE ? '<br><span class="muted">' + esc(e.NOTE) + '</span>' : '');
   }
   function ptitle(p) { return LANG === 'ar' ? (p.ar || p.en) : (p.en || p.ar); }
   function postCard(p) {
