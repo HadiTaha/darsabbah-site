@@ -2,9 +2,9 @@
 (function () {
   'use strict';
   var T = {
-    ar: {all: 'افتح فرعًا فرعًا', close: 'أغلق الكل', center: 'إلى الجذر', profile: 'الصفحة الشخصية', list: 'قائمة الشجرة',
+    ar: {all: 'افتح فرعًا فرعًا', openAll: 'افتح الكل', close: 'أغلق الكل', center: 'إلى الجذر', profile: 'الصفحة الشخصية', list: 'قائمة الشجرة',
       old: 'السلسلة المتوارثة', oldTag: 'رواية، غير موثّقة', hint: 'اضغط على اسم لفتح فروعه أو إغلاقها. اسحب للتحريك، واستخدم إصبعين أو عجلة الفأرة للتكبير.', gen: 'الجيل', kids: 'أولاد', desc: 'ذرية', open: 'افتح', shut: 'أغلق', born: 'الولادة', died: 'الوفاة'},
-    la: {all: 'Open branch by branch', close: 'Close all', center: 'Back to the root', profile: 'Open profile', list: 'Tree list',
+    la: {all: 'Open branch by branch', openAll: 'Open all', close: 'Close all', center: 'Back to the root', profile: 'Open profile', list: 'Tree list',
       old: 'Traditional line', oldTag: 'tradition, not documented', hint: 'Tap a name to open or close its branch. Drag to move, pinch or scroll to zoom.', gen: 'Generation', kids: 'children', desc: 'descendants', open: 'Open', shut: 'Close', born: 'Born', died: 'Died'}
   };
   function tt(k) { return T[DS.LANG === 'ar' ? 'ar' : 'la'][k]; }
@@ -54,7 +54,7 @@
     var main = document.getElementById('main');
     main.className = 'graphmain';
     main.innerHTML = '<div class="graphtabs">' + DS.treeTabs('graph', focus) + '</div>' +
-      '<div class="graphbar"><button class="btn" type="button" id="g-close">' + tt('close') + '</button>' +
+      '<div class="graphbar"><button class="btn" type="button" id="g-openall">' + tt('openAll') + '</button><button class="btn" type="button" id="g-close">' + tt('close') + '</button>' +
       '<button class="btn" type="button" id="g-root">' + tt('center') + '</button>' +
       '<button class="btn zbtn" type="button" id="g-in" aria-label="zoom in">＋</button><button class="btn zbtn" type="button" id="g-out" aria-label="zoom out">−</button>' +
 
@@ -83,6 +83,17 @@
     if (selected) showPanel(selected);
     document.getElementById('g-close').onclick = function () {
       OPEN = {}; OPEN[DS.ROOTS[0]] = 1; saveOpen(); selected = null; hidePanel(); render(DS.ROOTS[0], true); centerOn(DS.ROOTS[0], true, 0.9);
+    };
+    document.getElementById('g-openall').onclick = function () {
+      Object.keys(DS.P).forEach(function (id) { if (DS.P[id].c.some(function (k) { return DS.P[k]; })) OPEN[id] = 1; });
+      saveOpen(); render(null, false);
+      var xs = [], ys = [];
+      Object.keys(lastPos).forEach(function (id) { xs.push(lastPos[id].x); ys.push(lastPos[id].y); });
+      var x0 = Math.min.apply(null, xs) - NODE_W / 2, x1 = Math.max.apply(null, xs) + NODE_W / 2;
+      var y0 = Math.min.apply(null, ys) - NODE_H / 2 - 40, y1 = Math.max.apply(null, ys) + NODE_H / 2, pad = 20;
+      var k = Math.max(0.4, Math.min(1, (W - pad * 2) / (x1 - x0), (H - pad * 2) / (y1 - y0)));
+      var tx = (x1 - x0) * k < W ? W / 2 - k * (x0 + x1) / 2 : W / 2;
+      svg.call(zoom.transform, d3.zoomIdentity.translate(tx, pad + 50 * k).scale(k));
     };
     document.getElementById('g-in').onclick = function () { svg.transition().duration(300).call(zoom.scaleBy, 1.4); };
     document.getElementById('g-out').onclick = function () { svg.transition().duration(300).call(zoom.scaleBy, 1 / 1.4); };
