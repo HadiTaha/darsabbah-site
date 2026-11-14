@@ -360,3 +360,6 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 .mapbox>summary::before{content:"";width:10px;height:10px;background:var(--tatreez);transform:rotate(45deg);margin-inline-end:10px;flex:none;order:-1}
 .mapbox>summary{justify-content:flex-start}
 .mapbox>summary::after{margin-inline-start:auto}
+
+.libimg{margin:14px 0}
+.libimg img{width:100%;border-radius:10px;border:1px solid var(--line);cursor:zoom-in}

@@ -96,35 +96,58 @@
       .replace(/[ً-ْٰـ]/g, '')
       .replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي')
       .normalize('NFD').replace(/[̀-ͯ]/g, '')
-      .replace(/['’‘ʿʾ`\-]/g, '').replace(/\bal\s?/g, 'al').replace(/\s+/g, ' ').trim();
+      .replace(/['’‘ʿʾ`\-]/g, '').replace(/\bal\s?/g, 'al')
+      .replace(/\babd(?:\s?(?:al|el|ul|ol)|u|e|o)?\s?(?=[a-z])/g, 'abdal').replace(/\s+/g, ' ').trim();
+  }
+  // sound-alike key for Latin spellings: Mohamad = Muhammad, Mahmoud = Mahmud, Khaled = Khalid, Abdul Rahman = Abd al-Rahman
+  function sk(text) {
+    return String(text || '').split(' ').map(function (w) {
+      if (!/^[a-z]+$/.test(w)) return w;
+      w = w.replace(/^el(?=[a-z]{3})/, 'al')
+        .replace(/ph/g, 'f').replace(/q/g, 'k').replace(/ck/g, 'k').replace(/g(?!h)/g, 'j').replace(/dh/g, 'z').replace(/ou|oo/g, 'u');
+      var out = '', prev = '';
+      for (var i = 0; i < w.length; i++) {
+        var c = w[i], v = /[aeiou]/.test(c) || (c === 'y' && i > 0);
+        var k = v ? 'v' : c;
+        if (k !== prev) out += k;
+        prev = k;
+      }
+      return out;
+    }).join(' ');
   }
   function buildSearch() {
     SEARCH = ORDER.map(function (id) {
       var p = P[id], chainAr = line(id).map(function (q) { return [q.ar].concat(q.akaAr || []).join(' '); }),
         chainLa = line(id).map(function (q) { return [q.la].concat(q.akaLa || []).join(' '); });
-      return {id: id, own: norm([p.ar, p.la, p.surAr, p.surLa].concat(p.akaAr || [], p.akaLa || []).join(' ')),
-        chainAr: chainAr.map(norm), chainLa: chainLa.map(norm), oval: p.o ? String(p.o) : ''};
+      var own = norm([p.ar, p.la, p.surAr, p.surLa].concat(p.akaAr || [], p.akaLa || []).join(' '));
+      var la = chainLa.map(norm);
+      return {id: id, own: own, ownK: sk(own), chainAr: chainAr.map(norm), chainLa: la, chainLaK: la.map(sk), oval: p.o ? String(p.o) : ''};
     });
   }
   function has(field, w) { return (' ' + field).indexOf(' ' + w) >= 0; }
+  // 0 = exact spelling, 1 = sounds alike, -1 = no match
+  function hit(field, fieldK, w, wK) { return has(field, w) ? 0 : (fieldK && wK && wK.length > 1 && has(fieldK, wK) ? 1 : -1); }
   function search(q) {
     var words = norm(q).split(' ').filter(Boolean);
     if (!words.length) return [];
+    var wk = words.map(sk);
     var res = [];
     SEARCH.forEach(function (s) {
       if (/^\d+$/.test(q.trim())) { if (s.oval === q.trim()) res.push({id: s.id, sc: 0}); return; }
       // first word must match the person, the rest walk up the line (name, father, grandfather...)
       var best = null;
-      [s.chainAr, s.chainLa].forEach(function (ch) {
-        if (!(has(ch[0], words[0]) || has(s.own, words[0]))) return;
-        var pos = 0, ok = true;
+      [[s.chainAr, null], [s.chainLa, s.chainLaK]].forEach(function (pair) {
+        var ch = pair[0], chK = pair[1] || [];
+        var h0 = hit(ch[0], chK[0], words[0], wk[0]), ho = hit(s.own, s.ownK, words[0], wk[0]);
+        if (h0 < 0 && ho < 0) return;
+        var fuzzy = Math.min(h0 < 0 ? 9 : h0, ho < 0 ? 9 : ho), pos = 0, ok = true;
         for (var i = 1; i < words.length; i++) {
-          var found = -1;
-          for (var j = pos + 1; j < ch.length; j++) if (has(ch[j], words[i])) { found = j; break; }
-          if (found < 0) { if (has(s.own, words[i])) continue; ok = false; break; }
-          pos = found;
+          var found = -1, fz = 0;
+          for (var j = pos + 1; j < ch.length; j++) { var h = hit(ch[j], chK[j], words[i], wk[i]); if (h >= 0) { found = j; fz = h; break; } }
+          if (found < 0) { var hb = hit(s.own, s.ownK, words[i], wk[i]); if (hb >= 0) { fuzzy += hb; continue; } ok = false; break; }
+          pos = found; fuzzy += fz;
         }
-        if (ok) { var sc = (ch[0].split(' ')[0] === words[0] ? 0 : 1) + pos; if (best === null || sc < best) best = sc; }
+        if (ok) { var sc = (ch[0].split(' ')[0] === words[0] ? 0 : 1) + pos + fuzzy * 0.5; if (best === null || sc < best) best = sc; }
       });
       if (best !== null) res.push({id: s.id, sc: best});
     });
@@ -221,6 +244,14 @@
       '<article class="card prose"><h1 dir="auto">' + esc(iT(pg)) + '</h1>' + (pg.html[LANG === 'ar' ? 'ar' : 'en'] || pg.html.ar || pg.html.en || '') + '</article>' + cards + nav;
     document.title = iT(pg) + ' · ' + t('brand');
     if (DS.renderMaps) DS.renderMaps();
+    document.querySelectorAll('.libimg').forEach(function (el) {
+      var it = LIB.items.filter(function (x) { return x.id === el.getAttribute('data-lib'); })[0];
+      var f = it && it.files.filter(function (x) { return x.kind === 'image'; })[0]; if (!f) return;
+      el.innerHTML = '<a class="imglink"><img alt="" class="lazy"></a>';
+      var a = el.querySelector('a'), img = el.querySelector('img');
+      fetchBlob(f.thumb).then(function (u) { img.src = u; img.classList.add('in'); });
+      a.onclick = function () { a.classList.add('busy'); fetchBlob(f.blob).then(function (u) { a.classList.remove('busy'); lightbox(u); }); };
+    });
   }
 
   /* ---------- posts ---------- */
@@ -599,7 +630,7 @@
     $('foot').textContent = t('private') + ' ' + t('hideMe') + ' ' + t('built') + ': ' + BUILT;
   }
   window.DS = {
-    routes: {},
+    routes: {}, search: function (q) { return search(q); },
     get P() { return P; }, get ROOTS() { return ROOTS; }, get LANG() { return LANG; }, get KEY() { return KEY; },
     get DESC() { return DESC; }, get OLD() { return OLD; }, get MAPS() { return MAPS; }, get GEN() { return GEN; },
     treeTabs: treeTabs, fixTop: function (h) { HIST[HIST.length - 1] = h; }, nm: nm, plain: plain, label: label, nasab: nasab, t: t, esc: esc, setNav: setNav, fmtEvent: fmtEvent,
