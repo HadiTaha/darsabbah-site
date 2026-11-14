@@ -22,7 +22,7 @@
       built: 'آخر تحديث', private: 'موقع خاص بالعائلة. الرجاء عدم نشر كلمة السر.', hideMe: 'من يرغب من الأحياء في إخفاء اسمه أو بياناته، يكفي أن يخبر هادي.',
       upTo: 'السلسلة إلى الأعلى', ancestors: 'الأجداد', wrong: 'كلمة السر غير صحيحة', needHttps: 'افتح الموقع عبر https',
       father1: 'والد', chartOf: 'ذرية', back: 'عودة إلى الصفحة', children2: 'أولاد',
-      library: 'المكتبة', posts: 'مقالات', graph: 'الشجرة التفاعلية', list: 'قائمة الشجرة', write: 'كتابة مقال', edit: 'تعديل', del: 'حذف', latest: 'آخر المقالات', allPosts: 'كل المقالات', open: 'فتح', download: 'تحميل', loading: 'جارٍ التحميل…', welcome: 'أهلاً وسهلاً', libIntro: 'الوثائق والمصادر التي جمعناها عن العائلة وتاريخها.', items: 'وثيقة', pages: 'صفحة', explore: 'استكشفوا', treeCard: 'ابحثوا عن أنفسكم وعن أقاربكم في شجرة العائلة.', libCard: 'سجلات عثمانية ومقابلات وخرائط وصور اللوحة الأصلية.', postCard: 'حكايات ومكتشفات من تاريخ العائلة.', info: 'معلومات', genetics: 'الجينات', maps: 'خرائط العائلة', mapsCard: 'أين عاشت العائلة، وإلى أين وصل أبناؤها اليوم.', theme: 'الوضع', grove: 'البستان', back: 'رجوع', oldTitle: 'السلسلة المتوارثة قبل مصطفى', oldTag: 'رواية، غير موثّقة', oldBack: 'من مصطفى صعودًا:', infoCard: 'من هم الجبارات، ومن أين جاءت العائلة، وأين عاشت.', more: 'للمزيد', prev: 'السابق', next: 'التالي', toLib: 'إلى المكتبة', noPosts: 'لا توجد مقالات بعد.', fsOpen: 'فتح في نافذة جديدة'
+      library: 'المكتبة', posts: 'مقالات', graph: 'الشجرة التفاعلية', list: 'قائمة الشجرة', write: 'كتابة مقال', edit: 'تعديل', del: 'حذف', latest: 'آخر المقالات', allPosts: 'كل المقالات', open: 'فتح', download: 'تحميل', loading: 'جارٍ التحميل…', welcome: 'أهلاً وسهلاً', libIntro: 'الوثائق والمصادر التي جمعناها عن العائلة وتاريخها.', items: 'وثيقة', pages: 'صفحة', explore: 'استكشفوا', treeCard: 'ابحثوا عن أنفسكم وعن أقاربكم في شجرة العائلة.', libCard: 'سجلات عثمانية ومقابلات وخرائط وصور اللوحة الأصلية.', postCard: 'حكايات ومكتشفات من تاريخ العائلة.', info: 'معلومات', genetics: 'الجينات', values: 'قبل كل شيء', maps: 'خرائط العائلة', mapsCard: 'أين عاشت العائلة، وإلى أين وصل أبناؤها اليوم.', theme: 'الوضع', grove: 'البستان', back: 'رجوع', oldTitle: 'السلسلة المتوارثة قبل مصطفى', oldTag: 'رواية، غير موثّقة', oldBack: 'من مصطفى صعودًا:', infoCard: 'من هم الجبارات، ومن أين جاءت العائلة، وأين عاشت.', more: 'للمزيد', prev: 'السابق', next: 'التالي', toLib: 'إلى المكتبة', noPosts: 'لا توجد مقالات بعد.', fsOpen: 'فتح في نافذة جديدة'
     },
     la: {
       brand: 'Dar Sabbah', home: 'Home', tree: 'Tree', search: 'Search a name…', lang: 'عربي',
@@ -35,7 +35,7 @@
       built: 'Last updated', private: 'Private family site. Please do not share the password outside the family.', hideMe: 'Living relatives who would like their entry hidden can simply tell Hadi.',
       upTo: 'Line upwards', ancestors: 'Ancestors', wrong: 'Wrong password', needHttps: 'Open the site over https',
       father1: 'Father of', chartOf: 'Descendants of', back: 'Back to the page', children2: 'children',
-      library: 'Library', posts: 'Posts', graph: 'Interactive tree', list: 'Tree list', write: 'Write a post', edit: 'Edit', del: 'Delete', latest: 'Latest posts', allPosts: 'All posts', open: 'Open', download: 'Download', loading: 'Loading…', welcome: 'Welcome', libIntro: 'The documents and sources we have gathered about the family and its history.', items: 'documents', pages: 'pages', explore: 'Explore', treeCard: 'Find yourself and your relatives in the family tree.', libCard: 'Ottoman registers, interviews, maps and photos of the original board.', postCard: 'Stories and findings from the family history.', info: 'Info', genetics: 'Genetics', maps: 'Family maps', mapsCard: 'Where the family lived, and how far it reaches today.', theme: 'Theme', grove: 'Grove', back: 'Back', oldTitle: 'The traditional line before Mustafa', oldTag: 'tradition, not documented', oldBack: 'From Mustafa upwards:', infoCard: 'Who the Jabbarat are, where the family came from and where it lived.', more: 'Read more', prev: 'Previous', next: 'Next', toLib: 'To the library', noPosts: 'No posts yet.', fsOpen: 'Open in a new tab'
+      library: 'Library', posts: 'Posts', graph: 'Interactive tree', list: 'Tree list', write: 'Write a post', edit: 'Edit', del: 'Delete', latest: 'Latest posts', allPosts: 'All posts', open: 'Open', download: 'Download', loading: 'Loading…', welcome: 'Welcome', libIntro: 'The documents and sources we have gathered about the family and its history.', items: 'documents', pages: 'pages', explore: 'Explore', treeCard: 'Find yourself and your relatives in the family tree.', libCard: 'Ottoman registers, interviews, maps and photos of the original board.', postCard: 'Stories and findings from the family history.', info: 'Info', genetics: 'Genetics', values: 'Above all', maps: 'Family maps', mapsCard: 'Where the family lived, and how far it reaches today.', theme: 'Theme', grove: 'Grove', back: 'Back', oldTitle: 'The traditional line before Mustafa', oldTag: 'tradition, not documented', oldBack: 'From Mustafa upwards:', infoCard: 'Who the Jabbarat are, where the family came from and where it lived.', more: 'Read more', prev: 'Previous', next: 'Next', toLib: 'To the library', noPosts: 'No posts yet.', fsOpen: 'Open in a new tab'
     }
   };
   function t(k) { return T[LANG][k]; }
@@ -626,6 +626,7 @@
     $('back').textContent = (LANG === 'ar' ? '→ ' : '← ') + t('back');
     if ($('navinfo')) $('navinfo').textContent = t('info');
     if ($('navgen')) $('navgen').textContent = t('genetics');
+    if ($('navval')) $('navval').textContent = t('values');
     $('q').placeholder = t('search');
     $('lang').textContent = t('lang');
     $('logout').textContent = t('logout');
@@ -673,6 +674,7 @@
     else if (h[0] === 'lib' && h[1]) viewItem(h[1]);
     else if (h[0] === 'info') viewInfo(h[1] && decodeURIComponent(h[1]));
     else if (h[0] === 'genetics') viewInfo('genetics', 'genetics');
+    else if (h[0] === 'values') viewInfo('values', 'values');
     else if (h[0] === 'posts') viewPosts();
     else if (h[0] === 'post' && h[1]) viewPost(decodeURIComponent(h[1]));
     else { viewHome(); document.title = t('brand'); }
