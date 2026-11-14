@@ -5,10 +5,6 @@
   --serif:"Source Serif 4",Georgia,serif; --ar:"Noto Naskh Arabic","Geeza Pro","Arial",serif;
   color-scheme:light;
 }
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme=light]){--bg:#1b1916;--panel:#24211d;--ink:#ece5da;--muted:#a79b8b;--line:#3a352e;
-  --accent:#d6b07a;--accent2:#8fc39c;--chip:#2f2b25;--hi:#4a3f22;--err:#ef8a83;--land:#3a352b;--landline:#5d5444;--sea:#22201c;--border:#c9b48a;color-scheme:dark}
-}
 :root[data-theme=dark]{--bg:#1b1916;--panel:#24211d;--ink:#ece5da;--muted:#a79b8b;--line:#3a352e;
   --accent:#d6b07a;--accent2:#8fc39c;--chip:#2f2b25;--hi:#4a3f22;--err:#ef8a83;--land:#3a352b;--landline:#5d5444;--sea:#22201c;--border:#c9b48a;color-scheme:dark}
 *{box-sizing:border-box}
