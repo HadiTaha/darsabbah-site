@@ -128,6 +128,29 @@ h2{font-size:19px;margin:0 0 10px}
 @media (max-width:600px){.searchwrap{order:5;flex-basis:100%;max-width:none}.top{gap:8px 12px}.top .ghost,.top .lang{padding:4px 10px;font-size:14px}}
 @media (max-width:600px){.tree ul{padding-inline-start:12px}.tree .tog,.tree .leaf{width:20px;height:20px}}
 
+/* lock spacing (v2) */
+.lock{align-items:flex-start}
+.lockcard{margin:auto;padding:0 30px 28px}
+.tatreez{margin:0 -30px 28px}
+.greet{margin:0 0 6px;font-size:21px}
+.lockcard h1{margin:0 0 4px}
+.t-ar{font-size:60px;line-height:1.75;margin-top:-6px}
+.t-la{font-size:19px;letter-spacing:.24em;margin-top:6px}
+.sub{margin:18px auto 0;max-width:330px}
+.sub span{margin-top:2px}
+.teasers{gap:12px;margin:26px 0 28px}
+.teasers li{padding:14px 4px 12px;gap:4px}
+.remember{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0 0;text-align:start}
+.remember input{width:18px;height:18px;flex:none;accent-color:#2f4a37}
+.remember>span{display:flex;flex-direction:column;line-height:1.35}
+.remember small{font-size:12px;color:#8a7d6c}
+.enter{margin-top:18px;display:flex;align-items:center;justify-content:center;gap:10px}
+.enter .sep{opacity:.5}
+.err:empty{min-height:0;margin:0}
+.hint{margin:22px 0 0;padding-top:18px;border-top:1px solid #e6dac0;display:flex;flex-direction:column;gap:6px;line-height:1.55}
+@media (max-width:420px){.lockcard{padding:0 22px 24px}.tatreez{margin:0 -22px 22px}.t-ar{font-size:50px}.teasers{gap:8px}}
+@media (min-height:760px){.lock{padding-top:40px;padding-bottom:40px}}
+
 /* home */
 .hero{background:linear-gradient(135deg,#2f4a37,#3f6148);color:#fbf6ea;border-radius:18px;padding:26px 24px;margin-bottom:16px;position:relative;overflow:hidden}
 .hero::after{content:"";position:absolute;inset:0;opacity:.08;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23f3e6c8' stroke-width='1.5'%3E%3Cpath d='M24 4l8 8-8 8-8-8zM24 28l8 8-8 8-8-8zM4 24l8-8 8 8-8 8zM28 24l8-8 8 8-8 8z'/%3E%3C/g%3E%3C/svg%3E")}
