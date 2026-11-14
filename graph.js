@@ -3,9 +3,9 @@
   'use strict';
   var T = {
     ar: {all: 'افتح فرعًا فرعًا', close: 'أغلق الكل', center: 'إلى الجذر', profile: 'الصفحة الشخصية', list: 'قائمة الشجرة',
-      hint: 'اضغط على اسم لفتح فروعه أو إغلاقها. اسحب للتحريك، واستخدم إصبعين أو عجلة الفأرة للتكبير.', gen: 'الجيل', kids: 'أولاد', desc: 'ذرية', open: 'افتح', shut: 'أغلق', born: 'الولادة', died: 'الوفاة'},
+      old: 'السلسلة المتوارثة', oldTag: 'رواية، غير موثّقة', hint: 'اضغط على اسم لفتح فروعه أو إغلاقها. اسحب للتحريك، واستخدم إصبعين أو عجلة الفأرة للتكبير.', gen: 'الجيل', kids: 'أولاد', desc: 'ذرية', open: 'افتح', shut: 'أغلق', born: 'الولادة', died: 'الوفاة'},
     la: {all: 'Open branch by branch', close: 'Close all', center: 'Back to the root', profile: 'Open profile', list: 'Tree list',
-      hint: 'Tap a name to open or close its branch. Drag to move, pinch or scroll to zoom.', gen: 'Generation', kids: 'children', desc: 'descendants', open: 'Open', shut: 'Close', born: 'Born', died: 'Died'}
+      old: 'Traditional line', oldTag: 'tradition, not documented', hint: 'Tap a name to open or close its branch. Drag to move, pinch or scroll to zoom.', gen: 'Generation', kids: 'children', desc: 'descendants', open: 'Open', shut: 'Close', born: 'Born', died: 'Died'}
   };
   function tt(k) { return T[DS.LANG === 'ar' ? 'ar' : 'la'][k]; }
   var OPEN = null, KEYOPEN = 'ds-graph-open';
@@ -38,7 +38,7 @@
     return d3.hierarchy(build(DS.ROOTS[0]));
   }
 
-  var svg, gRoot, gLinks, gNodes, zoom, W, H, selected = null, lastPos = {}, rtl;
+  var gOld, oldOpen = false, svg, gRoot, gLinks, gNodes, zoom, W, H, selected = null, lastPos = {}, rtl;
 
   function view(args) {
     var focus = args[0];
@@ -65,13 +65,16 @@
     W = wrap.clientWidth; H = wrap.clientHeight;
     svg = d3.select('#gsvg').attr('width', W).attr('height', H);
     gRoot = svg.append('g');
+    gOld = gRoot.append('g').attr('class', 'gold');
     gLinks = gRoot.append('g').attr('class', 'glinks');
     gNodes = gRoot.append('g').attr('class', 'gnodes');
     zoom = d3.zoom().scaleExtent([0.15, 2.5]).on('zoom', function (e) { gRoot.attr('transform', e.transform); });
     svg.call(zoom).on('dblclick.zoom', null);
     lastPos = {};
     selected = focus && DS.P[focus] ? focus : null;
+    oldOpen = DS.store.get('ds-graph-old') === '1';
     render(null, false);
+    drawOld(false);
     var target = selected || DS.ROOTS[0];
     centerOn(target, false, selected ? 1 : 0.9);
     if (selected) showPanel(selected);
@@ -138,6 +141,32 @@
       .attr('transform', 'translate(' + dst.x + ',' + dst.y + ')').remove();
     lastPos = NEW;
   }
+  /* the board's border chain above Mustafa, drawn dashed and labelled as tradition */
+  var OLD_STEP = NODE_H + 22, PILL_W = 224;
+  function drawOld(animate) {
+    var O = DS.OLD; if (!O || !gOld) return;
+    gOld.selectAll('*').remove();
+    var ar = DS.LANG === 'ar', n = O.chain.length, py = -NODE_H / 2 - 30;
+    gOld.append('path').attr('class', 'oldlink').attr('d', 'M0,' + (-NODE_H / 2) + 'V' + (py + 14));
+    var pill = gOld.append('g').attr('class', 'oldpill').attr('transform', 'translate(0,' + py + ')').style('cursor', 'pointer')
+      .on('click', function (e) { e.stopPropagation(); oldOpen = !oldOpen; DS.store.set('ds-graph-old', oldOpen ? '1' : '0'); drawOld(true); });
+    pill.append('rect').attr('x', -PILL_W / 2).attr('y', -14).attr('width', PILL_W).attr('height', 28).attr('rx', 14);
+    pill.append('text').attr('dy', '0.35em').attr('text-anchor', 'middle')
+      .text((oldOpen ? '▾ ' : '▴ ') + tt('old') + ' (' + n + ') · ' + tt('oldTag'));
+    if (!oldOpen) return;
+    var top = py - 14 - n * OLD_STEP;
+    gOld.insert('path', ':first-child').attr('class', 'oldlink').attr('d', 'M0,' + (py - 14) + 'V' + (top + OLD_STEP - NODE_H / 2));
+    var g = gOld.selectAll('g.oldn').data(O.chain).enter().append('g').attr('class', 'oldn')
+      .attr('transform', function (d, i) { return 'translate(0,' + (py - 14 - (i + 1) * OLD_STEP + NODE_H / 2 - 6) + ')'; });
+    var last = n - 1;
+    g.append('rect').attr('x', function (d, i) { return i === last ? -150 : -NODE_W / 2; }).attr('y', -NODE_H / 2)
+      .attr('width', function (d, i) { return i === last ? 300 : NODE_W; }).attr('height', NODE_H).attr('rx', 10);
+    g.append('text').attr('dy', '0.35em').attr('text-anchor', 'middle').text(function (d) { return d[ar ? 0 : 1]; });
+    gOld.append('text').attr('class', 'oldcap').attr('text-anchor', 'middle').attr('y', top - 10)
+      .text(ar ? O.source_ar : O.source_en);
+    if (animate) g.style('opacity', 0).transition().duration(350).delay(function (d, i) { return i * 12; }).style('opacity', 1);
+  }
+
   var ctx = null;
   function fit(s) {
     if (!ctx) ctx = document.createElement('canvas').getContext('2d');

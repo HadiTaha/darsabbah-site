@@ -276,3 +276,14 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 .infocard span{color:var(--muted);font-size:15px}
 .infocard em{font-style:normal;color:var(--accent2);font-size:14px;margin-top:auto}
 .infonav{display:flex;justify-content:space-between;gap:10px;margin:16px 0;flex-wrap:wrap}
+
+/* traditional line above Mustafa */
+.gold .oldlink{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 4}
+.gold .oldpill rect{fill:var(--bg);stroke:var(--accent2);stroke-dasharray:5 3}
+.gold .oldpill text{font-size:13px;fill:var(--accent2)}
+.gold .oldn rect{fill:var(--bg);stroke:var(--muted);stroke-dasharray:5 3}
+.gold .oldn text{font-size:14px;fill:var(--muted);font-style:italic}
+.gold .oldcap{font-size:12px;fill:var(--muted)}
+.oldline ol{columns:2;column-gap:24px;margin:8px 0;padding-inline-start:28px}
+.oldline li{color:var(--muted);font-style:italic}
+@media (max-width:600px){.oldline ol{columns:1}}

@@ -1,7 +1,7 @@
 /* Dar Sabbah family site. Data is decrypted in the browser with the family password. */
 (function () {
   'use strict';
-  var P = {}, ROOTS = [], BUILT = '', INTRO = {}, KEY = null, LIB = {cats: [], items: []}, POSTS = [], INFO = [];
+  var P = {}, ROOTS = [], BUILT = '', INTRO = {}, KEY = null, LIB = {cats: [], items: []}, POSTS = [], INFO = [], OLD = null;
   var LANG = 'ar';
   var KEY_PW = 'ds-pw', KEY_LANG = 'ds-lang', KEY_OPEN = 'ds-open';
   var store = {
@@ -22,7 +22,7 @@
       built: 'آخر تحديث', private: 'موقع خاص بالعائلة. الرجاء عدم نشر كلمة السر.',
       upTo: 'السلسلة إلى الأعلى', ancestors: 'الأجداد', wrong: 'كلمة السر غير صحيحة', needHttps: 'افتح الموقع عبر https',
       father1: 'والد', chartOf: 'ذرية', back: 'عودة إلى الصفحة', children2: 'أولاد',
-      library: 'المكتبة', posts: 'مقالات', graph: 'الشجرة التفاعلية', list: 'قائمة الشجرة', write: 'كتابة مقال', edit: 'تعديل', del: 'حذف', latest: 'آخر المقالات', allPosts: 'كل المقالات', open: 'فتح', download: 'تحميل', loading: 'جارٍ التحميل…', welcome: 'أهلاً وسهلاً', libIntro: 'الوثائق والمصادر التي جمعناها عن العائلة وتاريخها.', items: 'وثيقة', pages: 'صفحة', explore: 'استكشفوا', treeCard: 'ابحثوا عن أنفسكم وعن أقاربكم في شجرة العائلة.', libCard: 'سجلات عثمانية ومقابلات وخرائط وصور اللوحة الأصلية.', postCard: 'حكايات ومكتشفات من تاريخ العائلة.', info: 'الخلفية', infoCard: 'من هم الجبارات، ومن أين جاءت العائلة، وأين عاشت.', more: 'للمزيد', prev: 'السابق', next: 'التالي', toLib: 'إلى المكتبة', noPosts: 'لا توجد مقالات بعد.', fsOpen: 'فتح في نافذة جديدة'
+      library: 'المكتبة', posts: 'مقالات', graph: 'الشجرة التفاعلية', list: 'قائمة الشجرة', write: 'كتابة مقال', edit: 'تعديل', del: 'حذف', latest: 'آخر المقالات', allPosts: 'كل المقالات', open: 'فتح', download: 'تحميل', loading: 'جارٍ التحميل…', welcome: 'أهلاً وسهلاً', libIntro: 'الوثائق والمصادر التي جمعناها عن العائلة وتاريخها.', items: 'وثيقة', pages: 'صفحة', explore: 'استكشفوا', treeCard: 'ابحثوا عن أنفسكم وعن أقاربكم في شجرة العائلة.', libCard: 'سجلات عثمانية ومقابلات وخرائط وصور اللوحة الأصلية.', postCard: 'حكايات ومكتشفات من تاريخ العائلة.', info: 'الخلفية', oldTitle: 'السلسلة المتوارثة قبل مصطفى', oldTag: 'رواية، غير موثّقة', oldBack: 'من مصطفى صعودًا:', infoCard: 'من هم الجبارات، ومن أين جاءت العائلة، وأين عاشت.', more: 'للمزيد', prev: 'السابق', next: 'التالي', toLib: 'إلى المكتبة', noPosts: 'لا توجد مقالات بعد.', fsOpen: 'فتح في نافذة جديدة'
     },
     la: {
       brand: 'Dar Sabbah', home: 'Home', tree: 'Tree', search: 'Search a name…', lang: 'عربي',
@@ -35,7 +35,7 @@
       built: 'Last updated', private: 'Private family site. Please do not share the password outside the family.',
       upTo: 'Line upwards', ancestors: 'Ancestors', wrong: 'Wrong password', needHttps: 'Open the site over https',
       father1: 'Father of', chartOf: 'Descendants of', back: 'Back to the page', children2: 'children',
-      library: 'Library', posts: 'Posts', graph: 'Interactive tree', list: 'Tree list', write: 'Write a post', edit: 'Edit', del: 'Delete', latest: 'Latest posts', allPosts: 'All posts', open: 'Open', download: 'Download', loading: 'Loading…', welcome: 'Welcome', libIntro: 'The documents and sources we have gathered about the family and its history.', items: 'documents', pages: 'pages', explore: 'Explore', treeCard: 'Find yourself and your relatives in the family tree.', libCard: 'Ottoman registers, interviews, maps and photos of the original board.', postCard: 'Stories and findings from the family history.', info: 'Background', infoCard: 'Who the Jabbarat are, where the family came from and where it lived.', more: 'Read more', prev: 'Previous', next: 'Next', toLib: 'To the library', noPosts: 'No posts yet.', fsOpen: 'Open in a new tab'
+      library: 'Library', posts: 'Posts', graph: 'Interactive tree', list: 'Tree list', write: 'Write a post', edit: 'Edit', del: 'Delete', latest: 'Latest posts', allPosts: 'All posts', open: 'Open', download: 'Download', loading: 'Loading…', welcome: 'Welcome', libIntro: 'The documents and sources we have gathered about the family and its history.', items: 'documents', pages: 'pages', explore: 'Explore', treeCard: 'Find yourself and your relatives in the family tree.', libCard: 'Ottoman registers, interviews, maps and photos of the original board.', postCard: 'Stories and findings from the family history.', info: 'Background', oldTitle: 'The traditional line before Mustafa', oldTag: 'tradition, not documented', oldBack: 'From Mustafa upwards:', infoCard: 'Who the Jabbarat are, where the family came from and where it lived.', more: 'Read more', prev: 'Previous', next: 'Next', toLib: 'To the library', noPosts: 'No posts yet.', fsOpen: 'Open in a new tab'
     }
   };
   function t(k) { return T[LANG][k]; }
@@ -59,7 +59,7 @@
   /* ---------- model ---------- */
   var DESC = {}, GEN = {}, ORDER = [], SEARCH = [];
   function prep(data) {
-    P = data.people; ROOTS = data.roots; BUILT = data.built; INTRO = data.intro || {}; LIB = data.library || LIB; POSTS = data.posts || []; INFO = data.info || [];
+    P = data.people; ROOTS = data.roots; BUILT = data.built; INTRO = data.intro || {}; LIB = data.library || LIB; POSTS = data.posts || []; INFO = data.info || []; OLD = data.oldline || null;
     Object.keys(P).forEach(function (id) { P[id].id = id; P[id].c = P[id].c || []; });
     function walk(id, g) {
       GEN[id] = g; ORDER.push(id);
@@ -435,6 +435,11 @@
     document.body.appendChild(d);
   }
 
+  function oldCard() {
+    var ar = LANG === 'ar';
+    return '<div class="card oldline"><h2>' + t('oldTitle') + ' <span class="tag">' + t('oldTag') + '</span></h2><p class="muted">' + esc(ar ? OLD.source_ar : OLD.source_en) + '</p>' +
+      '<p>' + t('oldBack') + '</p><ol>' + OLD.chain.map(function (x) { return '<li dir="auto">' + esc(ar ? x[0] : x[1]) + '</li>'; }).join('') + '</ol></div>';
+  }
   function viewPerson(id) {
     var p = P[id]; if (!p) return viewHome();
     setNav('');
@@ -465,6 +470,7 @@
       '<div class="card"><h2>' + t('father') + '</h2>' + (f ? '<ul class="plist">' + li(f.id) + '</ul>' : '<p class="muted">' + t('none') + '</p>') +
       '<h2 style="margin-top:16px">' + t('siblings') + ' (' + sibs.length + ')</h2>' +
       (sibs.length ? '<ul class="plist">' + sibs.map(li).join('') + '</ul>' : '<p class="muted">' + t('none') + '</p>') + '</div></div>' +
+      (OLD && id === ROOTS[0] ? oldCard() : '') +
       (p.n ? '<div class="card notes"><h2>' + t('notes') + '</h2>' + p.n.map(function (n) { return '<p dir="auto">' + esc(n) + '</p>'; }).join('') + '</div>' : '');
     document.title = plain(p) + ' · ' + t('brand');
   }
@@ -565,7 +571,7 @@
   window.DS = {
     routes: {},
     get P() { return P; }, get ROOTS() { return ROOTS; }, get LANG() { return LANG; }, get KEY() { return KEY; },
-    get DESC() { return DESC; }, get GEN() { return GEN; },
+    get DESC() { return DESC; }, get OLD() { return OLD; }, get GEN() { return GEN; },
     nm: nm, plain: plain, label: label, nasab: nasab, t: t, esc: esc, setNav: setNav, fmtEvent: fmtEvent,
     b64: b64, store: store, mdRender: mdRender, lightbox: lightbox, fetchBlob: fetchBlob,
     get DYN() { return DYN; }, set DYN(v) { DYN = v; POSTS = allPosts(); },
