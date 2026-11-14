@@ -18,21 +18,21 @@
     '<circle cx="-7" cy="3" r="2.4" fill="#2f3b22"/></symbol>';
   function name(p) { return DS.LANG === 'ar' ? p.ar : p.la; }
 
-  function palestine(el, geo, places) {
-    var all = topojson.feature(geo, geo.objects.countries).features;
-    var parts = geo.objects.countries.geometries.filter(function (g) { return g.id === '376' || g.id === '275'; });
-    var land = topojson.merge(geo, parts);
-    var W = 420, H = 760;
-    var proj = d3.geoMercator().fitExtent([[30, 20], [W - 30, H - 20]], land), path = d3.geoPath(proj);
-    var rtl = DS.LANG === 'ar';
+  var PAL = null;
+  function loadPal() { if (!PAL) PAL = fetch('geo/palestine.json').then(function (r) { return r.json(); }); return PAL; }
+  function palestine(el, ring, places, mini) {
+    var W = 420, H = 760, feat = {type: 'Feature', geometry: {type: 'Polygon', coordinates: [ring]}};
+    var proj = d3.geoMercator().fitExtent([[30, 20], [W - 30, H - 20]], feat);
+    var line = d3.line().curve(d3.curveCatmullRomClosed.alpha(0.5));
+    var d = line(ring.slice(0, -1).map(function (c) { return proj(c); }));
     var marks = places.map(function (p) {
-      var xy = proj([p.lon, p.lat]), x = xy[0], y = xy[1], s = p.old ? 26 : 34;
-      var lx = x + (p.la === 'al-Kabri' ? -20 : 20), anchor = p.la === 'al-Kabri' ? 'end' : 'start';
-      return '<g class="mk' + (p.old ? ' old' : '') + '"><use href="#sprig" x="' + (x - s / 2) + '" y="' + (y - s / 2) + '" width="' + s + '" height="' + s + '"/>' +
-        '<text x="' + lx + '" y="' + (y + 5) + '" text-anchor="' + anchor + '">' + DS.esc(name(p)) + '</text></g>';
+      var xy = proj([p.lon, p.lat]), x = xy[0], y = xy[1], s = (p.old ? 26 : 34) * (mini ? 1.5 : 1);
+      var left = p.la === 'al-Kabri' || p.la === 'Gaza';
+      var lab = mini ? '' : '<text x="' + (x + (left ? -20 : 20)) + '" y="' + (y + 5) + '" text-anchor="' + (left ? 'end' : 'start') + '">' + DS.esc(name(p)) + '</text>';
+      return '<g class="mk' + (p.old ? ' old' : '') + '"><use href="#sprig" x="' + (x - s / 2) + '" y="' + (y - s / 2) + '" width="' + s + '" height="' + s + '"/>' + lab + '</g>';
     }).join('');
-    el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="mapsvg pal" style="direction:ltr"><defs>' + SPRIG + '</defs>' +
-      '<path class="land" d="' + path(land) + '"/>' + marks + '</svg>';
+    el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="mapsvg pal' + (mini ? ' mini' : '') + '" style="direction:ltr"><defs>' + SPRIG + '</defs>' +
+      '<path class="land" d="' + d + '"/>' + marks + '</svg>';
   }
   function world(el, geo, places) {
     var land = topojson.feature(geo, geo.objects.countries);
@@ -48,13 +48,14 @@
   }
   DS.renderMaps = function () {
     var els = document.querySelectorAll('.dsmap'); if (!els.length || !DS.MAPS) return;
-    els.forEach(function (el) { el.innerHTML = '<p class="muted">' + DS.t('loading') + '</p>'; });
-    loadGeo().then(function (geo) {
-      els.forEach(function (el) {
-        var k = el.getAttribute('data-map');
-        if (k === 'palestine') palestine(el, geo, DS.MAPS.palestine || []);
-        else if (k === 'world') world(el, geo, DS.MAPS.world || []);
-      });
-    }, function () { els.forEach(function (el) { el.innerHTML = '<p class="err">⚠</p>'; }); });
+    els.forEach(function (el) {
+      var k = el.getAttribute('data-map');
+      if (k === 'palestine' || k === 'palestine-mini') {
+        loadPal().then(function (ring) { palestine(el, ring, DS.MAPS.palestine || [], k === 'palestine-mini'); }, function () { el.innerHTML = '<p class="err">⚠</p>'; });
+      } else if (k === 'world') {
+        el.innerHTML = '<p class="muted">' + DS.t('loading') + '</p>';
+        loadGeo().then(function (geo) { world(el, geo, DS.MAPS.world || []); }, function () { el.innerHTML = '<p class="err">⚠</p>'; });
+      }
+    });
   };
 })();

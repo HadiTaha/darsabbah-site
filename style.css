@@ -1,16 +1,16 @@
 :root{
   --bg:#f3eadb; --panel:#fbf6ec; --ink:#2b2620; --muted:#76695a; --line:#e0d2bb;
   --accent:#6b4f2a; --accent2:#3f6b4a; --chip:#ebdec6; --hi:#fbecc0; --err:#a3302a;
-  --land:#e6d8bc; --landline:#b9a57f; --sea:#efe6d4;
+  --land:#e6d8bc; --landline:#b9a57f; --sea:#efe6d4; --border:#4a3b24;
   --serif:"Source Serif 4",Georgia,serif; --ar:"Noto Naskh Arabic","Geeza Pro","Arial",serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme=light]){--bg:#1b1916;--panel:#24211d;--ink:#ece5da;--muted:#a79b8b;--line:#3a352e;
-  --accent:#d6b07a;--accent2:#8fc39c;--chip:#2f2b25;--hi:#4a3f22;--err:#ef8a83;--land:#3a352b;--landline:#5d5444;--sea:#22201c;color-scheme:dark}
+  --accent:#d6b07a;--accent2:#8fc39c;--chip:#2f2b25;--hi:#4a3f22;--err:#ef8a83;--land:#3a352b;--landline:#5d5444;--sea:#22201c;--border:#c9b48a;color-scheme:dark}
 }
 :root[data-theme=dark]{--bg:#1b1916;--panel:#24211d;--ink:#ece5da;--muted:#a79b8b;--line:#3a352e;
-  --accent:#d6b07a;--accent2:#8fc39c;--chip:#2f2b25;--hi:#4a3f22;--err:#ef8a83;--land:#3a352b;--landline:#5d5444;--sea:#22201c;color-scheme:dark}
+  --accent:#d6b07a;--accent2:#8fc39c;--chip:#2f2b25;--hi:#4a3f22;--err:#ef8a83;--land:#3a352b;--landline:#5d5444;--sea:#22201c;--border:#c9b48a;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:17px/1.55 var(--serif);-webkit-text-size-adjust:100%}
@@ -313,6 +313,7 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 .mapsvg{display:block;width:100%;height:auto}
 .mapsvg.pal{max-width:420px;margin:0 auto;max-height:78vh}
 .mapsvg .land{fill:var(--land);stroke:var(--landline);stroke-width:1;stroke-linejoin:round}
+.mapsvg.pal .land{stroke:var(--border);stroke-width:3}
 .mapsvg.wld .land{stroke-width:.4}
 .mapsvg .sphere{fill:var(--sea);stroke:var(--line)}
 .mapsvg text{font-size:17px;fill:var(--ink);font-family:var(--ar);font-weight:600;paint-order:stroke;stroke:var(--land);stroke-width:4px}
@@ -320,3 +321,12 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 .mapsvg .mk.old use{opacity:.6}
 .mapchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
 .mapchips span{background:var(--chip);border-radius:999px;padding:3px 12px;font-size:14px}
+
+.homemap{display:flex;align-items:center;gap:18px;color:var(--ink);padding:14px 18px}
+.homemap:hover{text-decoration:none;border-color:var(--accent)}
+.homemap .dsmap{flex:0 0 130px;margin:0}
+.homemap .mapsvg.mini{max-height:200px}
+.homemap .hmtext{display:flex;flex-direction:column;gap:4px}
+.homemap .hmtext b{font-size:19px}
+.homemap .hmtext span{color:var(--muted);font-size:15px}
+.homemap .hmtext em{font-style:normal;color:var(--accent2);font-size:14px}
