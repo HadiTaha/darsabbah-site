@@ -22,7 +22,7 @@
       built: 'آخر تحديث', private: 'موقع خاص بالعائلة. الرجاء عدم نشر كلمة السر.',
       upTo: 'السلسلة إلى الأعلى', ancestors: 'الأجداد', wrong: 'كلمة السر غير صحيحة', needHttps: 'افتح الموقع عبر https',
       father1: 'والد', chartOf: 'ذرية', back: 'عودة إلى الصفحة', children2: 'أولاد',
-      library: 'المكتبة', posts: 'مقالات', latest: 'آخر المقالات', allPosts: 'كل المقالات', open: 'فتح', download: 'تحميل', loading: 'جارٍ التحميل…', welcome: 'أهلاً وسهلاً', libIntro: 'الوثائق والمصادر التي جمعناها عن العائلة وتاريخها.', items: 'وثيقة', pages: 'صفحة', explore: 'استكشفوا', treeCard: 'ابحثوا عن أنفسكم وعن أقاربكم في شجرة العائلة.', libCard: 'سجلات عثمانية ومقابلات وخرائط وصور اللوحة الأصلية.', postCard: 'حكايات ومكتشفات من تاريخ العائلة.', toLib: 'إلى المكتبة', noPosts: 'لا توجد مقالات بعد.', fsOpen: 'فتح في نافذة جديدة'
+      library: 'المكتبة', posts: 'مقالات', graph: 'الشجرة التفاعلية', list: 'قائمة الشجرة', write: 'كتابة مقال', edit: 'تعديل', del: 'حذف', latest: 'آخر المقالات', allPosts: 'كل المقالات', open: 'فتح', download: 'تحميل', loading: 'جارٍ التحميل…', welcome: 'أهلاً وسهلاً', libIntro: 'الوثائق والمصادر التي جمعناها عن العائلة وتاريخها.', items: 'وثيقة', pages: 'صفحة', explore: 'استكشفوا', treeCard: 'ابحثوا عن أنفسكم وعن أقاربكم في شجرة العائلة.', libCard: 'سجلات عثمانية ومقابلات وخرائط وصور اللوحة الأصلية.', postCard: 'حكايات ومكتشفات من تاريخ العائلة.', toLib: 'إلى المكتبة', noPosts: 'لا توجد مقالات بعد.', fsOpen: 'فتح في نافذة جديدة'
     },
     la: {
       brand: 'Dar Sabbah', home: 'Home', tree: 'Tree', search: 'Search a name…', lang: 'عربي',
@@ -35,7 +35,7 @@
       built: 'Last updated', private: 'Private family site. Please do not share the password outside the family.',
       upTo: 'Line upwards', ancestors: 'Ancestors', wrong: 'Wrong password', needHttps: 'Open the site over https',
       father1: 'Father of', chartOf: 'Descendants of', back: 'Back to the page', children2: 'children',
-      library: 'Library', posts: 'Posts', latest: 'Latest posts', allPosts: 'All posts', open: 'Open', download: 'Download', loading: 'Loading…', welcome: 'Welcome', libIntro: 'The documents and sources we have gathered about the family and its history.', items: 'documents', pages: 'pages', explore: 'Explore', treeCard: 'Find yourself and your relatives in the family tree.', libCard: 'Ottoman registers, interviews, maps and photos of the original board.', postCard: 'Stories and findings from the family history.', toLib: 'To the library', noPosts: 'No posts yet.', fsOpen: 'Open in a new tab'
+      library: 'Library', posts: 'Posts', graph: 'Interactive tree', list: 'Tree list', write: 'Write a post', edit: 'Edit', del: 'Delete', latest: 'Latest posts', allPosts: 'All posts', open: 'Open', download: 'Download', loading: 'Loading…', welcome: 'Welcome', libIntro: 'The documents and sources we have gathered about the family and its history.', items: 'documents', pages: 'pages', explore: 'Explore', treeCard: 'Find yourself and your relatives in the family tree.', libCard: 'Ottoman registers, interviews, maps and photos of the original board.', postCard: 'Stories and findings from the family history.', toLib: 'To the library', noPosts: 'No posts yet.', fsOpen: 'Open in a new tab'
     }
   };
   function t(k) { return T[LANG][k]; }
@@ -50,7 +50,7 @@
     return crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveKey'])
       .then(function (base) {
         return crypto.subtle.deriveKey({name: 'PBKDF2', salt: b64(D.salt), iterations: D.iter, hash: 'SHA-256'},
-          base, {name: 'AES-GCM', length: 256}, false, ['decrypt']);
+          base, {name: 'AES-GCM', length: 256}, false, ['decrypt', 'encrypt']);
       })
       .then(function (key) { KEY = key; return crypto.subtle.decrypt({name: 'AES-GCM', iv: b64(D.iv)}, key, b64(D.ct)); })
       .then(function (buf) { return JSON.parse(new TextDecoder().decode(buf)); });
@@ -180,19 +180,62 @@
   };
 
   /* ---------- posts ---------- */
+  var STATIC_POSTS = null, DYN = [];
+  function allPosts() {
+    if (STATIC_POSTS === null) STATIC_POSTS = POSTS.slice();
+    var ids = {}; DYN.forEach(function (p) { ids[p.id] = 1; });
+    return DYN.concat(STATIC_POSTS.filter(function (p) { return !ids[p.id]; }))
+      .sort(function (x, y) { return x.date < y.date ? 1 : x.date > y.date ? -1 : 0; });
+  }
+  function decJSON(o) {
+    return crypto.subtle.decrypt({name: 'AES-GCM', iv: b64(o.iv)}, KEY, b64(o.ct))
+      .then(function (buf) { return JSON.parse(new TextDecoder().decode(buf)); });
+  }
+  function loadDynPosts() {
+    return fetch('dyn/index.json', {cache: 'no-store'}).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (o) { return o ? decJSON(o) : []; })
+      .then(function (list) { DYN = (list || []).map(function (p) { p.dyn = true; return p; }); POSTS = allPosts(); var h = location.hash; if (h === '' || h === '#/' || h.indexOf('#/post') === 0) route(); })
+      .catch(function () {});
+  }
+  function mdRender(md, imgs) {
+    var src = String(md || '').replace(/</g, '&lt;');
+    var html = window.marked ? marked.parse(src, {breaks: true}) : '<p>' + esc(md) + '</p>';
+    return html.replace(/<(p|h[1-6]|li|blockquote|ul|ol)>/g, '<$1 dir="auto">')
+      .replace(/<a href="(https?:[^"]+)"/g, '<a target="_blank" rel="noopener noreferrer" href="$1"');
+  }
   function viewPosts() {
     setNav('posts');
+    POSTS = allPosts();
     $('main').className = '';
-    $('main').innerHTML = '<h1 class="pagetitle">' + t('posts') + '</h1><div class="card">' + (POSTS.length ? POSTS.map(postCard).join('') : '<p class="muted">' + t('noPosts') + '</p>') + '</div>';
+    $('main').innerHTML = '<h1 class="pagetitle">' + t('posts') + '</h1>' + (DS.canWrite() ? '<div class="toolbar"><a class="btn" href="#/write">✎ ' + t('write') + '</a></div>' : '') +
+      '<div class="card">' + (POSTS.length ? POSTS.map(postCard).join('') : '<p class="muted">' + t('noPosts') + '</p>') + '</div>';
     document.title = t('posts') + ' · ' + t('brand');
   }
   function viewPost(id) {
+    POSTS = allPosts();
     var p = POSTS.filter(function (x) { return x.id === id; })[0]; if (!p) return viewPosts();
     setNav('posts');
-    var html = p.html[LANG === 'ar' ? 'ar' : 'en'] || p.html.ar || p.html.en;
     $('main').className = '';
-    $('main').innerHTML = '<div class="crumbs"><a href="#/posts">' + t('posts') + '</a></div><article class="card prose"><p class="date">' + esc(p.date) + '</p><h1>' + esc(ptitle(p)) + '</h1>' + html + '</article>';
-    document.title = ptitle(p) + ' · ' + t('brand');
+    var tools = p.dyn && DS.canWrite() ? '<div class="toolbar"><a class="btn" href="#/write/' + esc(p.id) + '">✎ ' + t('edit') + '</a><button class="btn" type="button" id="delpost">' + t('del') + '</button></div>' : '';
+    function show(html, gallery) {
+      $('main').innerHTML = '<div class="crumbs"><a href="#/posts">' + t('posts') + '</a></div>' + tools + '<article class="card prose"><p class="date">' + esc(p.date) + '</p><h1 dir="auto">' + esc(ptitle(p)) + '</h1>' + html + (gallery || '') + '</article>';
+      if ($('delpost')) $('delpost').onclick = function () { DS.deletePost(p.id); };
+      document.title = ptitle(p) + ' · ' + t('brand');
+    }
+    if (!p.dyn) return show(p.html[LANG === 'ar' ? 'ar' : 'en'] || p.html.ar || p.html.en);
+    show('<p class="muted">' + t('loading') + '</p>');
+    fetch(p.body.f, {cache: 'no-store'}).then(function (r) { return r.arrayBuffer(); })
+      .then(function (buf) { return crypto.subtle.decrypt({name: 'AES-GCM', iv: b64(p.body.iv)}, KEY, buf); })
+      .then(function (plain) {
+        var body = JSON.parse(new TextDecoder().decode(plain));
+        var md = body.md[LANG === 'ar' ? 'ar' : 'en'] || body.md.ar || body.md.en;
+        var imgs = body.images || [];
+        show(mdRender(md), imgs.length ? '<div class="postimgs">' + imgs.map(function (im, i) { return '<a class="imglink" data-i="' + i + '"><img class="lazy" alt=""></a>'; }).join('') + '</div>' : '');
+        document.querySelectorAll('.postimgs .imglink').forEach(function (a) {
+          var im = imgs[+a.getAttribute('data-i')];
+          fetchBlob(im).then(function (u) { var img = a.querySelector('img'); img.src = u; img.classList.add('in'); a.onclick = function () { lightbox(u); }; });
+        });
+      }, function () { show('<p class="err">⚠</p>'); });
   }
 
   /* ---------- library ---------- */
@@ -310,7 +353,7 @@
       (p.f ? '<p class="nasab">' + esc(nasab(p, 4)) + '</p>' : '') +
       '<dl class="facts">' + facts.map(function (x) { return '<dt>' + x[0] + '</dt><dd>' + x[1] + '</dd>'; }).join('') + '</dl>' +
       '<div class="actions">' + (DESC[id] ? '<a class="btn" href="#/chart/' + id + '">' + t('chart') + '</a>' : '') +
-      '<a class="btn" href="#/tree/' + id + '">' + t('showTree') + '</a></div></div>' +
+      '<a class="btn" href="#/graph/' + id + '">' + t('graph') + '</a><a class="btn" href="#/tree/' + id + '">' + t('list') + '</a></div></div>' +
       '<div class="grid2"><div class="card"><h2>' + t('children') + ' (' + p.c.length + ')</h2>' +
       (p.c.length ? '<ul class="plist">' + p.c.filter(function (k) { return P[k]; }).map(li).join('') + '</ul>' : '<p class="muted">' + t('none') + '</p>') + '</div>' +
       '<div class="card"><h2>' + t('father') + '</h2>' + (f ? '<ul class="plist">' + li(f.id) + '</ul>' : '<p class="muted">' + t('none') + '</p>') +
@@ -412,9 +455,21 @@
     $('logout').textContent = t('logout');
     $('foot').textContent = t('private') + ' ' + t('built') + ': ' + BUILT;
   }
+  window.DS = {
+    routes: {},
+    get P() { return P; }, get ROOTS() { return ROOTS; }, get LANG() { return LANG; }, get KEY() { return KEY; },
+    get DESC() { return DESC; }, get GEN() { return GEN; },
+    nm: nm, plain: plain, label: label, nasab: nasab, t: t, esc: esc, setNav: setNav, fmtEvent: fmtEvent,
+    b64: b64, store: store, mdRender: mdRender, lightbox: lightbox, fetchBlob: fetchBlob,
+    get DYN() { return DYN; }, set DYN(v) { DYN = v; POSTS = allPosts(); },
+    canWrite: function () { return !!store.get('ds-gh-token'); },
+    deletePost: function () {}
+  };
   function route() {
     $('results').hidden = true;
     var h = location.hash.replace(/^#\/?/, '').split('/');
+    if (DS.routes[h[0]]) { DS.routes[h[0]](h.slice(1).map(decodeURIComponent)); return; }
+    document.body.classList.remove('fullbleed');
     if (h[0] === 'p' && h[1]) viewPerson(h[1]);
     else if (h[0] === 'tree') viewTree(h[1]);
     else if (h[0] === 'chart' && h[1]) viewChart(h[1]);
@@ -427,6 +482,7 @@
   }
   function start(data) {
     prep(data); buildSearch();
+    loadDynPosts();
     LANG = store.get(KEY_LANG) || 'ar';
     $('lock').hidden = true; $('lock').style.display = 'none'; $('app').hidden = false;
     applyLang(); route();
