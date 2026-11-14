@@ -7,6 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#2f4a37">
 <title>دار صبّاح · Dar Sabbah</title>
+<script>try{var th=localStorage.getItem("ds-theme");if(th)document.documentElement.setAttribute("data-theme",th)}catch(e){}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%232f4a37'/%3E%3Cpath d='M32 52V28M32 36c-6 0-11-4-12-10M32 31c6 0 10-4 12-9' stroke='%23f3e6c8' stroke-width='3.5' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='20' cy='25' r='3.5' fill='%23c9a45c'/%3E%3Ccircle cx='44' cy='21' r='3.5' fill='%23c9a45c'/%3E%3Ccircle cx='32' cy='18' r='3.5' fill='%23c9a45c'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,6 +59,7 @@
       <input id="q" type="search" autocomplete="off">
       <div id="results" class="results" hidden></div>
     </div>
+    <button id="theme" class="lang themebtn" type="button"></button>
     <button id="lang" class="lang" type="button"></button>
     <button id="logout" class="ghost" type="button"></button>
   </header>
@@ -69,6 +71,7 @@
 <script src="marked.min.js"></script>
 <script src="app.js"></script>
 <script src="graph.js"></script>
+<script src="maps.js"></script>
 <script src="write.js"></script>
 </body>
 </html>

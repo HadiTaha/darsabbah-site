@@ -1,7 +1,7 @@
 /* Dar Sabbah family site. Data is decrypted in the browser with the family password. */
 (function () {
   'use strict';
-  var P = {}, ROOTS = [], BUILT = '', INTRO = {}, KEY = null, LIB = {cats: [], items: []}, POSTS = [], INFO = [], OLD = null;
+  var P = {}, ROOTS = [], BUILT = '', INTRO = {}, KEY = null, LIB = {cats: [], items: []}, POSTS = [], INFO = [], OLD = null, MAPS = null;
   var LANG = 'ar';
   var KEY_PW = 'ds-pw', KEY_LANG = 'ds-lang', KEY_OPEN = 'ds-open';
   var store = {
@@ -22,7 +22,7 @@
       built: 'آخر تحديث', private: 'موقع خاص بالعائلة. الرجاء عدم نشر كلمة السر.', hideMe: 'من يرغب من الأحياء في إخفاء اسمه أو بياناته، يكفي أن يخبر هادي.',
       upTo: 'السلسلة إلى الأعلى', ancestors: 'الأجداد', wrong: 'كلمة السر غير صحيحة', needHttps: 'افتح الموقع عبر https',
       father1: 'والد', chartOf: 'ذرية', back: 'عودة إلى الصفحة', children2: 'أولاد',
-      library: 'المكتبة', posts: 'مقالات', graph: 'الشجرة التفاعلية', list: 'قائمة الشجرة', write: 'كتابة مقال', edit: 'تعديل', del: 'حذف', latest: 'آخر المقالات', allPosts: 'كل المقالات', open: 'فتح', download: 'تحميل', loading: 'جارٍ التحميل…', welcome: 'أهلاً وسهلاً', libIntro: 'الوثائق والمصادر التي جمعناها عن العائلة وتاريخها.', items: 'وثيقة', pages: 'صفحة', explore: 'استكشفوا', treeCard: 'ابحثوا عن أنفسكم وعن أقاربكم في شجرة العائلة.', libCard: 'سجلات عثمانية ومقابلات وخرائط وصور اللوحة الأصلية.', postCard: 'حكايات ومكتشفات من تاريخ العائلة.', info: 'الخلفية', grove: 'البستان', back: 'رجوع', oldTitle: 'السلسلة المتوارثة قبل مصطفى', oldTag: 'رواية، غير موثّقة', oldBack: 'من مصطفى صعودًا:', infoCard: 'من هم الجبارات، ومن أين جاءت العائلة، وأين عاشت.', more: 'للمزيد', prev: 'السابق', next: 'التالي', toLib: 'إلى المكتبة', noPosts: 'لا توجد مقالات بعد.', fsOpen: 'فتح في نافذة جديدة'
+      library: 'المكتبة', posts: 'مقالات', graph: 'الشجرة التفاعلية', list: 'قائمة الشجرة', write: 'كتابة مقال', edit: 'تعديل', del: 'حذف', latest: 'آخر المقالات', allPosts: 'كل المقالات', open: 'فتح', download: 'تحميل', loading: 'جارٍ التحميل…', welcome: 'أهلاً وسهلاً', libIntro: 'الوثائق والمصادر التي جمعناها عن العائلة وتاريخها.', items: 'وثيقة', pages: 'صفحة', explore: 'استكشفوا', treeCard: 'ابحثوا عن أنفسكم وعن أقاربكم في شجرة العائلة.', libCard: 'سجلات عثمانية ومقابلات وخرائط وصور اللوحة الأصلية.', postCard: 'حكايات ومكتشفات من تاريخ العائلة.', info: 'معلومات', theme: 'الوضع', grove: 'البستان', back: 'رجوع', oldTitle: 'السلسلة المتوارثة قبل مصطفى', oldTag: 'رواية، غير موثّقة', oldBack: 'من مصطفى صعودًا:', infoCard: 'من هم الجبارات، ومن أين جاءت العائلة، وأين عاشت.', more: 'للمزيد', prev: 'السابق', next: 'التالي', toLib: 'إلى المكتبة', noPosts: 'لا توجد مقالات بعد.', fsOpen: 'فتح في نافذة جديدة'
     },
     la: {
       brand: 'Dar Sabbah', home: 'Home', tree: 'Tree', search: 'Search a name…', lang: 'عربي',
@@ -35,7 +35,7 @@
       built: 'Last updated', private: 'Private family site. Please do not share the password outside the family.', hideMe: 'Living relatives who would like their entry hidden can simply tell Hadi.',
       upTo: 'Line upwards', ancestors: 'Ancestors', wrong: 'Wrong password', needHttps: 'Open the site over https',
       father1: 'Father of', chartOf: 'Descendants of', back: 'Back to the page', children2: 'children',
-      library: 'Library', posts: 'Posts', graph: 'Interactive tree', list: 'Tree list', write: 'Write a post', edit: 'Edit', del: 'Delete', latest: 'Latest posts', allPosts: 'All posts', open: 'Open', download: 'Download', loading: 'Loading…', welcome: 'Welcome', libIntro: 'The documents and sources we have gathered about the family and its history.', items: 'documents', pages: 'pages', explore: 'Explore', treeCard: 'Find yourself and your relatives in the family tree.', libCard: 'Ottoman registers, interviews, maps and photos of the original board.', postCard: 'Stories and findings from the family history.', info: 'Background', grove: 'Grove', back: 'Back', oldTitle: 'The traditional line before Mustafa', oldTag: 'tradition, not documented', oldBack: 'From Mustafa upwards:', infoCard: 'Who the Jabbarat are, where the family came from and where it lived.', more: 'Read more', prev: 'Previous', next: 'Next', toLib: 'To the library', noPosts: 'No posts yet.', fsOpen: 'Open in a new tab'
+      library: 'Library', posts: 'Posts', graph: 'Interactive tree', list: 'Tree list', write: 'Write a post', edit: 'Edit', del: 'Delete', latest: 'Latest posts', allPosts: 'All posts', open: 'Open', download: 'Download', loading: 'Loading…', welcome: 'Welcome', libIntro: 'The documents and sources we have gathered about the family and its history.', items: 'documents', pages: 'pages', explore: 'Explore', treeCard: 'Find yourself and your relatives in the family tree.', libCard: 'Ottoman registers, interviews, maps and photos of the original board.', postCard: 'Stories and findings from the family history.', info: 'Info', theme: 'Theme', grove: 'Grove', back: 'Back', oldTitle: 'The traditional line before Mustafa', oldTag: 'tradition, not documented', oldBack: 'From Mustafa upwards:', infoCard: 'Who the Jabbarat are, where the family came from and where it lived.', more: 'Read more', prev: 'Previous', next: 'Next', toLib: 'To the library', noPosts: 'No posts yet.', fsOpen: 'Open in a new tab'
     }
   };
   function t(k) { return T[LANG][k]; }
@@ -59,7 +59,7 @@
   /* ---------- model ---------- */
   var DESC = {}, GEN = {}, ORDER = [], SEARCH = [];
   function prep(data) {
-    P = data.people; ROOTS = data.roots; BUILT = data.built; INTRO = data.intro || {}; LIB = data.library || LIB; POSTS = data.posts || []; INFO = data.info || []; OLD = data.oldline || null;
+    P = data.people; ROOTS = data.roots; BUILT = data.built; INTRO = data.intro || {}; LIB = data.library || LIB; POSTS = data.posts || []; INFO = data.info || []; OLD = data.oldline || null; MAPS = data.maps || null;
     Object.keys(P).forEach(function (id) { P[id].id = id; P[id].c = P[id].c || []; });
     function walk(id, g) {
       GEN[id] = g; ORDER.push(id);
@@ -209,6 +209,7 @@
     $('main').innerHTML = (crumbs.length ? '<div class="crumbs">' + crumbs.join(' › ') + '</div>' : '') +
       '<article class="card prose"><h1 dir="auto">' + esc(iT(pg)) + '</h1>' + (pg.html[LANG === 'ar' ? 'ar' : 'en'] || pg.html.ar || pg.html.en || '') + '</article>' + cards + nav;
     document.title = iT(pg) + ' · ' + t('brand');
+    if (DS.renderMaps) DS.renderMaps();
   }
 
   /* ---------- posts ---------- */
@@ -589,7 +590,7 @@
   window.DS = {
     routes: {},
     get P() { return P; }, get ROOTS() { return ROOTS; }, get LANG() { return LANG; }, get KEY() { return KEY; },
-    get DESC() { return DESC; }, get OLD() { return OLD; }, get GEN() { return GEN; },
+    get DESC() { return DESC; }, get OLD() { return OLD; }, get MAPS() { return MAPS; }, get GEN() { return GEN; },
     treeTabs: treeTabs, fixTop: function (h) { HIST[HIST.length - 1] = h; }, nm: nm, plain: plain, label: label, nasab: nasab, t: t, esc: esc, setNav: setNav, fmtEvent: fmtEvent,
     b64: b64, store: store, mdRender: mdRender, lightbox: lightbox, fetchBlob: fetchBlob,
     get DYN() { return DYN; }, set DYN(v) { DYN = v; POSTS = allPosts(); },
@@ -606,6 +607,13 @@
   }
   function goBack() {
     if (HIST.length > 1) history.back(); else location.hash = '#/';
+  }
+  function themeIcon() {
+    var cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    $('theme').innerHTML = cur === 'dark'
+      ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>'
+      : '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>';
+    $('theme').setAttribute('aria-label', t('theme'));
   }
   function route() {
     trackBack();
@@ -633,6 +641,12 @@
     applyLang(); route();
     window.addEventListener('hashchange', route);
     $('back').onclick = goBack;
+    $('theme').onclick = function () {
+      var cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      var nx = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', nx); store.set('ds-theme', nx); themeIcon();
+    };
+    themeIcon();
     $('lang').onclick = function () { LANG = LANG === 'ar' ? 'la' : 'ar'; store.set(KEY_LANG, LANG); applyLang(); route(); showResults(); $('results').hidden = true; };
     $('logout').onclick = function () { store.del(KEY_PW); location.hash = ''; location.reload(); };
     var q = $('q');
