@@ -53,11 +53,11 @@
     }
     var main = document.getElementById('main');
     main.className = 'graphmain';
-    main.innerHTML =
+    main.innerHTML = '<div class="graphtabs">' + DS.treeTabs('graph', focus) + '</div>' +
       '<div class="graphbar"><button class="btn" type="button" id="g-close">' + tt('close') + '</button>' +
       '<button class="btn" type="button" id="g-root">' + tt('center') + '</button>' +
       '<button class="btn zbtn" type="button" id="g-in" aria-label="zoom in">＋</button><button class="btn zbtn" type="button" id="g-out" aria-label="zoom out">−</button>' +
-      '<a class="btn" href="#/tree' + (focus ? '/' + focus : '') + '">' + tt('list') + '</a>' +
+
       '<span class="ghint">' + tt('hint') + '</span></div>' +
       '<div class="graphwrap" id="gwrap"><svg id="gsvg"></svg><div class="gpanel" id="gpanel" hidden></div></div>';
     var wrap = document.getElementById('gwrap');
@@ -75,8 +75,11 @@
     oldOpen = DS.store.get('ds-graph-old') === '1';
     render(null, false);
     drawOld(false);
-    var target = selected || DS.ROOTS[0];
-    centerOn(target, false, selected ? 1 : 0.9);
+    var target = selected || DS.ROOTS[0], saved = null;
+    try { saved = JSON.parse(sessionStorage.getItem('ds-graph-tf') || 'null'); } catch (e) {}
+    if (saved && saved.id === (focus || '')) svg.call(zoom.transform, d3.zoomIdentity.translate(saved.x, saved.y).scale(saved.k));
+    else centerOn(target, false, selected ? 1 : 0.9);
+    zoom.on('end', function (e) { try { sessionStorage.setItem('ds-graph-tf', JSON.stringify({id: selected || '', x: e.transform.x, y: e.transform.y, k: e.transform.k})); } catch (x) {} });
     if (selected) showPanel(selected);
     document.getElementById('g-close').onclick = function () {
       OPEN = {}; OPEN[DS.ROOTS[0]] = 1; saveOpen(); selected = null; hidePanel(); render(DS.ROOTS[0], true); centerOn(DS.ROOTS[0], true, 0.9);
@@ -201,6 +204,7 @@
     (animate ? svg.transition().duration(600).ease(d3.easeCubicInOut) : svg).call(zoom.transform, tf);
   }
   function showPanel(id) {
+    if (location.hash !== '#/graph/' + id) { history.replaceState(null, '', '#/graph/' + id); DS.fixTop('#/graph/' + id); }
     var p = DS.P[id], el = document.getElementById('gpanel'); if (!el) return;
     var facts = [];
     if (p.b && (p.b.DATE || p.b.PLAC)) facts.push(tt('born') + ': ' + [p.b.DATE, p.b.PLAC].filter(Boolean).join(', '));
