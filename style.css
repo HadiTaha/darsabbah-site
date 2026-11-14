@@ -159,7 +159,7 @@ h2{font-size:19px;margin:0 0 10px}
 html[dir=ltr] .hero h1{font-family:var(--serif)}
 .kicker{margin:0;color:#e9c98a;font-size:16px}
 .hero .stat{background:rgba(255,255,255,.12)}
-.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
 @media (max-width:700px){.tiles{grid-template-columns:1fr}}
 .tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;color:var(--ink);display:flex;flex-direction:column;gap:4px;transition:transform .15s,border-color .15s}
 .tile:hover{text-decoration:none;border-color:var(--accent);transform:translateY(-2px)}
@@ -267,3 +267,12 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 .pdfview{height:75vh;height:75dvh;overflow:auto;background:#d9d2c3;border-radius:10px;padding:8px;touch-action:pan-x pan-y;direction:ltr}
 .pdfpages{margin:0 auto;display:flex;flex-direction:column;gap:8px}
 .pdfpages canvas{display:block;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+
+/* background pages */
+.infocards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:16px 0}
+.infocard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--ink);display:flex;flex-direction:column;gap:6px;transition:transform .15s,border-color .15s}
+.infocard:hover{text-decoration:none;border-color:var(--accent);transform:translateY(-2px)}
+.infocard b{font-size:18px}
+.infocard span{color:var(--muted);font-size:15px}
+.infocard em{font-style:normal;color:var(--accent2);font-size:14px;margin-top:auto}
+.infonav{display:flex;justify-content:space-between;gap:10px;margin:16px 0;flex-wrap:wrap}

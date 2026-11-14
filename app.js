@@ -1,7 +1,7 @@
 /* Dar Sabbah family site. Data is decrypted in the browser with the family password. */
 (function () {
   'use strict';
-  var P = {}, ROOTS = [], BUILT = '', INTRO = {}, KEY = null, LIB = {cats: [], items: []}, POSTS = [];
+  var P = {}, ROOTS = [], BUILT = '', INTRO = {}, KEY = null, LIB = {cats: [], items: []}, POSTS = [], INFO = [];
   var LANG = 'ar';
   var KEY_PW = 'ds-pw', KEY_LANG = 'ds-lang', KEY_OPEN = 'ds-open';
   var store = {
@@ -22,7 +22,7 @@
       built: 'آخر تحديث', private: 'موقع خاص بالعائلة. الرجاء عدم نشر كلمة السر.',
       upTo: 'السلسلة إلى الأعلى', ancestors: 'الأجداد', wrong: 'كلمة السر غير صحيحة', needHttps: 'افتح الموقع عبر https',
       father1: 'والد', chartOf: 'ذرية', back: 'عودة إلى الصفحة', children2: 'أولاد',
-      library: 'المكتبة', posts: 'مقالات', graph: 'الشجرة التفاعلية', list: 'قائمة الشجرة', write: 'كتابة مقال', edit: 'تعديل', del: 'حذف', latest: 'آخر المقالات', allPosts: 'كل المقالات', open: 'فتح', download: 'تحميل', loading: 'جارٍ التحميل…', welcome: 'أهلاً وسهلاً', libIntro: 'الوثائق والمصادر التي جمعناها عن العائلة وتاريخها.', items: 'وثيقة', pages: 'صفحة', explore: 'استكشفوا', treeCard: 'ابحثوا عن أنفسكم وعن أقاربكم في شجرة العائلة.', libCard: 'سجلات عثمانية ومقابلات وخرائط وصور اللوحة الأصلية.', postCard: 'حكايات ومكتشفات من تاريخ العائلة.', toLib: 'إلى المكتبة', noPosts: 'لا توجد مقالات بعد.', fsOpen: 'فتح في نافذة جديدة'
+      library: 'المكتبة', posts: 'مقالات', graph: 'الشجرة التفاعلية', list: 'قائمة الشجرة', write: 'كتابة مقال', edit: 'تعديل', del: 'حذف', latest: 'آخر المقالات', allPosts: 'كل المقالات', open: 'فتح', download: 'تحميل', loading: 'جارٍ التحميل…', welcome: 'أهلاً وسهلاً', libIntro: 'الوثائق والمصادر التي جمعناها عن العائلة وتاريخها.', items: 'وثيقة', pages: 'صفحة', explore: 'استكشفوا', treeCard: 'ابحثوا عن أنفسكم وعن أقاربكم في شجرة العائلة.', libCard: 'سجلات عثمانية ومقابلات وخرائط وصور اللوحة الأصلية.', postCard: 'حكايات ومكتشفات من تاريخ العائلة.', info: 'الخلفية', infoCard: 'من هم الجبارات، ومن أين جاءت العائلة، وأين عاشت.', more: 'للمزيد', prev: 'السابق', next: 'التالي', toLib: 'إلى المكتبة', noPosts: 'لا توجد مقالات بعد.', fsOpen: 'فتح في نافذة جديدة'
     },
     la: {
       brand: 'Dar Sabbah', home: 'Home', tree: 'Tree', search: 'Search a name…', lang: 'عربي',
@@ -35,7 +35,7 @@
       built: 'Last updated', private: 'Private family site. Please do not share the password outside the family.',
       upTo: 'Line upwards', ancestors: 'Ancestors', wrong: 'Wrong password', needHttps: 'Open the site over https',
       father1: 'Father of', chartOf: 'Descendants of', back: 'Back to the page', children2: 'children',
-      library: 'Library', posts: 'Posts', graph: 'Interactive tree', list: 'Tree list', write: 'Write a post', edit: 'Edit', del: 'Delete', latest: 'Latest posts', allPosts: 'All posts', open: 'Open', download: 'Download', loading: 'Loading…', welcome: 'Welcome', libIntro: 'The documents and sources we have gathered about the family and its history.', items: 'documents', pages: 'pages', explore: 'Explore', treeCard: 'Find yourself and your relatives in the family tree.', libCard: 'Ottoman registers, interviews, maps and photos of the original board.', postCard: 'Stories and findings from the family history.', toLib: 'To the library', noPosts: 'No posts yet.', fsOpen: 'Open in a new tab'
+      library: 'Library', posts: 'Posts', graph: 'Interactive tree', list: 'Tree list', write: 'Write a post', edit: 'Edit', del: 'Delete', latest: 'Latest posts', allPosts: 'All posts', open: 'Open', download: 'Download', loading: 'Loading…', welcome: 'Welcome', libIntro: 'The documents and sources we have gathered about the family and its history.', items: 'documents', pages: 'pages', explore: 'Explore', treeCard: 'Find yourself and your relatives in the family tree.', libCard: 'Ottoman registers, interviews, maps and photos of the original board.', postCard: 'Stories and findings from the family history.', info: 'Background', infoCard: 'Who the Jabbarat are, where the family came from and where it lived.', more: 'Read more', prev: 'Previous', next: 'Next', toLib: 'To the library', noPosts: 'No posts yet.', fsOpen: 'Open in a new tab'
     }
   };
   function t(k) { return T[LANG][k]; }
@@ -59,7 +59,7 @@
   /* ---------- model ---------- */
   var DESC = {}, GEN = {}, ORDER = [], SEARCH = [];
   function prep(data) {
-    P = data.people; ROOTS = data.roots; BUILT = data.built; INTRO = data.intro || {}; LIB = data.library || LIB; POSTS = data.posts || [];
+    P = data.people; ROOTS = data.roots; BUILT = data.built; INTRO = data.intro || {}; LIB = data.library || LIB; POSTS = data.posts || []; INFO = data.info || [];
     Object.keys(P).forEach(function (id) { P[id].id = id; P[id].c = P[id].c || []; });
     function walk(id, g) {
       GEN[id] = g; ORDER.push(id);
@@ -166,6 +166,7 @@
       '<div class="stats"><div class="stat"><b>' + Object.keys(P).length + '</b>' + t('people') + '</div><div class="stat"><b>' + maxG + '</b>' + t('gens') + '</div><div class="stat"><b>' + nDocs + '</b>' + t('items') + '</div></div></section>' +
       '<div class="tiles">' +
       '<a class="tile" href="#/tree"><span class="ico">' + ICON.tree + '</span><b>' + t('tree') + '</b><span>' + t('treeCard') + '</span></a>' +
+      '<a class="tile" href="#/info"><span class="ico">' + ICON.info + '</span><b>' + t('info') + '</b><span>' + t('infoCard') + '</span></a>' +
       '<a class="tile" href="#/library"><span class="ico">' + ICON.lib + '</span><b>' + t('library') + '</b><span>' + t('libCard') + '</span></a>' +
       '<a class="tile" href="#/posts"><span class="ico">' + ICON.post + '</span><b>' + t('posts') + '</b><span>' + t('postCard') + '</span></a></div>' +
       '<div class="card"><h2>' + t('latest') + '</h2>' + (POSTS.length ? POSTS.slice(0, 3).map(postCard).join('') : '<p class="muted">' + t('noPosts') + '</p>') +
@@ -176,8 +177,38 @@
   var ICON = {
     tree: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22v-9M12 13c-3 0-5-2-6-5M12 11c3 0 5-2 6-5M12 13V7"/><circle cx="6" cy="7" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="4" r="2"/></svg>',
     lib: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4h4v16H4zM10 4h4v16h-4zM16 5l3.5-1 3 15.5-3.5 1z"/></svg>',
+    info: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>',
     post: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 3h10l4 4v14H5z"/><path d="M8 11h8M8 15h8M8 7h4"/></svg>'
   };
+
+  /* ---------- background (info) ---------- */
+  function iT(x) { return LANG === 'ar' ? (x.ar || x.en) : (x.en || x.ar); }
+  function iS(x) { return LANG === 'ar' ? (x.sar || x.sen) : (x.sen || x.sar); }
+  function iGet(id) { return INFO.filter(function (x) { return x.id === id; })[0]; }
+  function iKids(id) { return INFO.filter(function (x) { return x.parent === id; }).sort(function (a, b) { return a.order - b.order; }); }
+  function iFlat() { var out = []; (function walk(id) { iKids(id).forEach(function (k) { out.push(k); walk(k.id); }); })(INFO.filter(function (x) { return !x.parent; })[0].id); return out; }
+  function viewInfo(id) {
+    setNav('info');
+    $('main').className = '';
+    var root = INFO.filter(function (x) { return !x.parent; })[0];
+    if (!root) { $('main').innerHTML = '<p class="muted">—</p>'; return; }
+    var pg = (id && iGet(id)) || root;
+    var crumbs = [], c = pg;
+    while (c && c.parent) { c = iGet(c.parent); if (c) crumbs.unshift('<a href="#/info/' + esc(c.id) + '">' + esc(iT(c)) + '</a>'); }
+    var kids = iKids(pg.id);
+    var cards = kids.length ? '<div class="infocards">' + kids.map(function (k) {
+      return '<a class="infocard" href="#/info/' + esc(k.id) + '"><b dir="auto">' + esc(iT(k)) + '</b><span dir="auto">' + esc(iS(k)) + '</span><em>' + t('more') + ' ' + (LANG === 'ar' ? '←' : '→') + '</em></a>';
+    }).join('') + '</div>' : '';
+    var nav = '';
+    if (pg !== root) {
+      var fl = iFlat(), i = fl.indexOf(pg), pv = fl[i - 1], nx = fl[i + 1];
+      nav = '<div class="infonav">' + (pv ? '<a class="btn" href="#/info/' + esc(pv.id) + '">' + (LANG === 'ar' ? '→ ' : '← ') + esc(iT(pv)) + '</a>' : '<span></span>') +
+        (nx ? '<a class="btn" href="#/info/' + esc(nx.id) + '">' + esc(iT(nx)) + (LANG === 'ar' ? ' ←' : ' →') + '</a>' : '') + '</div>';
+    }
+    $('main').innerHTML = (crumbs.length ? '<div class="crumbs">' + crumbs.join(' › ') + '</div>' : '') +
+      '<article class="card prose"><h1 dir="auto">' + esc(iT(pg)) + '</h1>' + (pg.html[LANG === 'ar' ? 'ar' : 'en'] || pg.html.ar || pg.html.en || '') + '</article>' + cards + nav;
+    document.title = iT(pg) + ' · ' + t('brand');
+  }
 
   /* ---------- posts ---------- */
   var STATIC_POSTS = null, DYN = [];
@@ -525,6 +556,7 @@
     $('navtree').textContent = t('tree');
     $('navlib').textContent = t('library');
     $('navposts').textContent = t('posts');
+    if ($('navinfo')) $('navinfo').textContent = t('info');
     $('q').placeholder = t('search');
     $('lang').textContent = t('lang');
     $('logout').textContent = t('logout');
@@ -550,6 +582,7 @@
     else if (h[0] === 'chart' && h[1]) viewChart(h[1]);
     else if (h[0] === 'library') viewLibrary();
     else if (h[0] === 'lib' && h[1]) viewItem(h[1]);
+    else if (h[0] === 'info') viewInfo(h[1] && decodeURIComponent(h[1]));
     else if (h[0] === 'posts') viewPosts();
     else if (h[0] === 'post' && h[1]) viewPost(decodeURIComponent(h[1]));
     else { viewHome(); document.title = t('brand'); }
