@@ -363,3 +363,4 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 
 .libimg{margin:14px 0}
 .libimg img{width:100%;border-radius:10px;border:1px solid var(--line);cursor:zoom-in}
+.prose td:first-child{white-space:nowrap}
