@@ -724,7 +724,7 @@
     $('theme').onclick = function () {
       var cur = document.documentElement.getAttribute('data-theme') || 'light';
       var nx = cur === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', nx); store.set('ds-theme', nx); themeIcon();
+      document.documentElement.setAttribute('data-theme', nx); store.set('ds-theme', nx); themeIcon(); var tc = document.getElementById('themecolor'); if (tc) tc.setAttribute('content', nx === 'dark' ? '#24211d' : '#fbf6ec');
     };
     themeIcon();
     $('lang').onclick = function () { LANG = LANG === 'ar' ? 'la' : 'ar'; store.set(KEY_LANG, LANG); applyLang(); route(); showResults(); $('results').hidden = true; };
