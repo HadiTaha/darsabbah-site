@@ -385,3 +385,5 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 @media (max-width:699px){body.fullbleed .top{position:static}}
 .gpanel{bottom:calc(12px + env(safe-area-inset-bottom))}
 @media (display-mode: standalone){body{padding-bottom:env(safe-area-inset-bottom)}}
+.wasm{margin:12px 0 14px;display:inline-flex;flex-direction:column;align-items:center;gap:4px;padding:12px 18px;border:1px dashed var(--line);border-radius:12px;background:var(--panel);color:var(--tatreez)}
+.wasm figcaption{color:var(--muted);font-size:13px}
