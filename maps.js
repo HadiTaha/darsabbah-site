@@ -16,6 +16,14 @@
       var fc = topojson.feature(a[0], a[0].objects.countries), fix = {};
       a[1].features.forEach(function (f) { fix[f.id] = f; });
       fc.features = fc.features.map(function (f) { return fix[f.id] || f; });
+      // a few shapes in the detailed data are wound the wrong way and would flood the whole sea; turn them round
+      var rev = function (r) { return r.slice().reverse(); };
+      var fixPoly = function (c) { return d3.geoArea({type: 'Polygon', coordinates: c}) > 2 * Math.PI ? c.map(rev) : c; };
+      fc.features.forEach(function (f) {
+        var g = f.geometry; if (!g) return;
+        if (g.type === 'Polygon') g.coordinates = fixPoly(g.coordinates);
+        else if (g.type === 'MultiPolygon') g.coordinates = g.coordinates.map(fixPoly);
+      });
       return fc;
     });
   }
@@ -61,14 +69,17 @@
     var coarse = zg.select('path.coarse'), fine = zg.select('path.fine'), fineFeat = null, fineTimer = null;
     // when zoomed in, draw the detailed shapes for the part of the world in view only
     function detail(tf) {
-      if (tf.k < 4) { fine.attr('d', ''); coarse.style('display', null); return; }
+      if (tf.k < 8) { fine.attr('d', ''); coarse.style('display', null); return; }
       loadFine().then(function (fc) {
         if (!fineFeat) fineFeat = fc.features.map(function (f) { return {f: f, b: path.bounds(f)}; });
         var x0 = -tf.x / tf.k, y0 = -tf.y / tf.k, x1 = x0 + W / tf.k, y1 = y0 + H / tf.k;
         var vis = fineFeat.filter(function (o) { return o.b[1][0] >= x0 && o.b[0][0] <= x1 && o.b[1][1] >= y0 && o.b[0][1] <= y1; })
           .map(function (o) { return o.f; });
         var now = d3.zoomTransform(svg.node()); if (now.k !== tf.k || now.x !== tf.x || now.y !== tf.y) return;
-        fine.attr('d', path({type: 'FeatureCollection', features: vis}));
+        // clip to the visible area (plus a margin), so the phone only draws what is on screen
+        var mx = (x1 - x0) * 0.5, my = (y1 - y0) * 0.5;
+        var clip = d3.geoPath(d3.geoNaturalEarth1().fitExtent([[6, 6], [W - 6, H - 6]], {type: 'Sphere'}).clipExtent([[x0 - mx, y0 - my], [x1 + mx, y1 + my]]));
+        fine.attr('d', clip({type: 'FeatureCollection', features: vis}));
         coarse.style('display', 'none');
       }, function () {});
     }
@@ -78,7 +89,7 @@
       // sprigs keep a modest size on screen, so close places separate as you zoom in
       var s = 0.55 * Math.pow(Math.min(k, 24), 0.45) / k;
       mk.attr('transform', function () { return 'translate(' + this.getAttribute('data-x') + ',' + this.getAttribute('data-y') + ') scale(' + s + ')'; });
-      if (k < 4) { fine.attr('d', ''); coarse.style('display', null); }
+      if (k < 8) { fine.attr('d', ''); coarse.style('display', null); }
     }).on('end', function (e) { clearTimeout(fineTimer); var tf = e.transform; fineTimer = setTimeout(function () { detail(tf); }, 120); });
     svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
     el.querySelectorAll('.mapbtns button').forEach(function (b) {
