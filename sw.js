@@ -1,6 +1,6 @@
 /* Offline support for the home-screen app: always try the network first so updates show at once,
    and fall back to the last saved copy when there is no connection. Family data stays encrypted. */
-var CACHE = 'ds-v1';
+var CACHE = 'ds-v2';
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) {
     return c.addAll(['./', 'index.html', 'style.css', 'app.js', 'graph.js', 'maps.js', 'write.js', 'data.enc.js',
@@ -17,7 +17,9 @@ self.addEventListener('fetch', function (e) {
   if (r.method !== 'GET') return;
   var u = new URL(r.url);
   if (u.origin !== location.origin && u.host.indexOf('fonts.') !== 0) return;
-  e.respondWith(fetch(r).then(function (res) {
+  // same-origin: ask the server every time (skip the browser's 10-minute HTTP cache)
+  var net = u.origin === location.origin ? fetch(r.url, {cache: 'no-cache', credentials: 'same-origin'}) : fetch(r);
+  e.respondWith(net.then(function (res) {
     if (res && (res.ok || res.type === 'opaque')) { var cp = res.clone(); caches.open(CACHE).then(function (c) { c.put(r, cp); }); }
     return res;
   }).catch(function () {

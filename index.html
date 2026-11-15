@@ -83,6 +83,6 @@
 <script src="write.js"></script>
 <script>/* home-screen app: after 30 minutes in the background, reload on return so it shows the newest version */
 (function(){var hid=0;document.addEventListener('visibilitychange',function(){if(document.hidden){hid=Date.now();}else if(hid&&Date.now()-hid>30*60*1000&&navigator.onLine){location.reload();}});})();</script>
-<script>if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});</script>
+<script>if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){r.update()}).catch(function(){});var had=!!navigator.serviceWorker.controller,done=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(had&&!done){done=true;location.reload()}})});</script>
 </body>
 </html>
