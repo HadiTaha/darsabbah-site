@@ -220,7 +220,7 @@ main.graphmain{max-width:none;padding:0}
 .ghint{color:var(--muted);font-size:13px;flex:1 1 260px}
 .graphwrap{position:relative;overflow:hidden;background:var(--bg);
   background-image:radial-gradient(circle,var(--line) 1px,transparent 1.2px);background-size:22px 22px;touch-action:none}
-@media (max-width:600px){.ghint{display:none}.graphbar{padding:8px 12px;gap:6px}.graphbar .btn{padding:6px 11px;font-size:14px}}
+@media (max-width:600px){.ghint{display:none}.graphbar{padding:6px 10px;gap:5px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.graphbar::-webkit-scrollbar{display:none}.graphbar .btn{padding:5px 10px;font-size:13px;white-space:nowrap;flex:0 0 auto}.graphbar .zbtn{min-width:32px}}
 .zbtn{min-width:38px;font-weight:700}
 #gsvg{display:block;cursor:grab}
 #gsvg:active{cursor:grabbing}
@@ -382,3 +382,4 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 .valink b{font-size:16px}
 .valink span{color:var(--muted);font-size:14px}
 .valink em{font-style:normal;color:var(--accent2);font-size:13px}
+@media (max-width:699px){body.fullbleed .top{position:static}}

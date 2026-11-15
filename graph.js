@@ -2,14 +2,20 @@
 (function () {
   'use strict';
   var T = {
-    ar: {all: 'افتح فرعًا فرعًا', openAll: 'افتح الكل', close: 'أغلق الكل', center: 'إلى الجذر', profile: 'الصفحة الشخصية', list: 'قائمة الشجرة',
+    ar: {all: 'افتح فرعًا فرعًا', openAll: 'افتح الكل', vert: 'عرض طولي', horiz: 'عرض عرضي', root: 'الجذر', close: 'أغلق الكل', center: 'إلى الجذر', profile: 'الصفحة الشخصية', list: 'قائمة الشجرة',
       old: 'السلسلة المتوارثة', oldTag: 'رواية، غير موثّقة', hint: 'اضغط على اسم لفتح فروعه أو إغلاقها. اسحب للتحريك، واستخدم إصبعين أو عجلة الفأرة للتكبير.', gen: 'الجيل', kids: 'أولاد', desc: 'ذرية', open: 'افتح', shut: 'أغلق', born: 'الولادة', died: 'الوفاة'},
-    la: {all: 'Open branch by branch', openAll: 'Open all', close: 'Close all', center: 'Back to the root', profile: 'Open profile', list: 'Tree list',
+    la: {all: 'Open branch by branch', openAll: 'Open all', vert: 'Vertical', horiz: 'Wide', root: 'Root', close: 'Close all', center: 'Back to the root', profile: 'Open profile', list: 'Tree list',
       old: 'Traditional line', oldTag: 'tradition, not documented', hint: 'Tap a name to open or close its branch. Drag to move, pinch or scroll to zoom.', gen: 'Generation', kids: 'children', desc: 'descendants', open: 'Open', shut: 'Close', born: 'Born', died: 'Died'}
   };
   function tt(k) { return T[DS.LANG === 'ar' ? 'ar' : 'la'][k]; }
   var OPEN = null, KEYOPEN = 'ds-graph-open';
-  var NODE_W = 128, NODE_H = 34, GAP_X = 14, GAP_Y = 64;
+  var NODE_W = 128, NODE_H = 34, GAP_X = 14, GAP_Y = 64, VERT = false, INDENT = 22, ROW = NODE_H + 10;
+  function isPhone() { return window.innerWidth < 700; }
+  function pickLayout() {
+    var s = DS.store.get('ds-graph-layout');
+    VERT = s ? s === 'v' : isPhone();
+    NODE_W = VERT ? 150 : 128;
+  }
 
   function loadOpen() {
     if (OPEN) return;
@@ -45,6 +51,8 @@
     DS.setNav('tree');
     document.body.classList.add('fullbleed');
     loadOpen();
+    pickLayout();
+    fitHeight.done = false;
     rtl = DS.LANG === 'ar';
     if (focus && DS.P[focus]) {
       var p = DS.P[focus];
@@ -54,8 +62,9 @@
     var main = document.getElementById('main');
     main.className = 'graphmain';
     main.innerHTML = '<div class="graphtabs">' + DS.treeTabs('graph', focus) + '</div>' +
-      '<div class="graphbar"><button class="btn" type="button" id="g-openall">' + tt('openAll') + '</button><button class="btn" type="button" id="g-close">' + tt('close') + '</button>' +
-      '<button class="btn" type="button" id="g-root">' + tt('center') + '</button>' +
+      '<div class="graphbar"><button class="btn" type="button" id="g-layout" aria-pressed="' + VERT + '">' + (VERT ? '↔ ' + tt('horiz') : '↕ ' + tt('vert')) + '</button>' +
+      '<button class="btn" type="button" id="g-openall">' + tt('openAll') + '</button><button class="btn" type="button" id="g-close">' + tt('close') + '</button>' +
+      '<button class="btn" type="button" id="g-root">' + (isPhone() ? tt('root') : tt('center')) + '</button>' +
       '<button class="btn zbtn" type="button" id="g-in" aria-label="zoom in">＋</button><button class="btn zbtn" type="button" id="g-out" aria-label="zoom out">−</button>' +
 
       '<span class="ghint">' + tt('hint') + '</span></div>' +
@@ -70,6 +79,12 @@
     gNodes = gRoot.append('g').attr('class', 'gnodes');
     zoom = d3.zoom().scaleExtent([0.15, 2.5]).on('zoom', function (e) { gRoot.attr('transform', e.transform); });
     svg.call(zoom).on('dblclick.zoom', null);
+    if (VERT) svg.on('wheel.zoom', function (e) {
+      if (e.ctrlKey) return;
+      e.preventDefault();
+      var k = d3.zoomTransform(svg.node()).k;
+      zoom.translateBy(svg, -e.deltaX / k, -e.deltaY / k);
+    }, {passive: false});
     lastPos = {};
     selected = focus && DS.P[focus] ? focus : null;
     oldOpen = DS.store.get('ds-graph-old') === '1';
@@ -78,7 +93,7 @@
     var target = selected || DS.ROOTS[0], saved = null;
     try { saved = JSON.parse(sessionStorage.getItem('ds-graph-tf') || 'null'); } catch (e) {}
     if (saved && saved.id === (focus || '')) svg.call(zoom.transform, d3.zoomIdentity.translate(saved.x, saved.y).scale(saved.k));
-    else centerOn(target, false, selected ? 1 : 0.9);
+    else centerOn(target, false, VERT || selected ? 1 : 0.9);
     zoom.on('end', function (e) { try { sessionStorage.setItem('ds-graph-tf', JSON.stringify({id: selected || '', x: e.transform.x, y: e.transform.y, k: e.transform.k})); } catch (x) {} });
     if (selected) showPanel(selected);
     document.getElementById('g-close').onclick = function () {
@@ -87,6 +102,7 @@
     document.getElementById('g-openall').onclick = function () {
       Object.keys(DS.P).forEach(function (id) { if (DS.P[id].c.some(function (k) { return DS.P[k]; })) OPEN[id] = 1; });
       saveOpen(); render(null, false);
+      if (VERT) { centerOn(DS.ROOTS[0], false, 1); return; }
       var xs = [], ys = [];
       Object.keys(lastPos).forEach(function (id) { xs.push(lastPos[id].x); ys.push(lastPos[id].y); });
       var x0 = Math.min.apply(null, xs) - NODE_W / 2, x1 = Math.max.apply(null, xs) + NODE_W / 2;
@@ -97,7 +113,12 @@
     };
     document.getElementById('g-in').onclick = function () { svg.transition().duration(300).call(zoom.scaleBy, 1.4); };
     document.getElementById('g-out').onclick = function () { svg.transition().duration(300).call(zoom.scaleBy, 1 / 1.4); };
-    document.getElementById('g-root').onclick = function () { centerOn(DS.ROOTS[0], true, 0.9); };
+    document.getElementById('g-root').onclick = function () { centerOn(DS.ROOTS[0], true, VERT ? 1 : 0.9); };
+    document.getElementById('g-layout').onclick = function () {
+      DS.store.set('ds-graph-layout', VERT ? 'h' : 'v');
+      try { sessionStorage.removeItem('ds-graph-tf'); } catch (e) {}
+      view([selected]);
+    };
     window.addEventListener('resize', onResize);
     document.title = (DS.LANG === 'ar' ? 'الشجرة التفاعلية' : 'Interactive tree') + ' · ' + DS.t('brand');
   }
@@ -108,12 +129,26 @@
   }
   function fitHeight(wrap) {
     var top = wrap.getBoundingClientRect().top + window.scrollY;
+    if (isPhone()) {
+      // on a phone the tree gets the whole screen below its own toolbar; the site header scrolls away
+      var tabs = document.querySelector('.graphtabs');
+      var own = tabs ? top - (tabs.getBoundingClientRect().top + window.scrollY) : 0;
+      wrap.style.height = Math.max(380, window.innerHeight - own) + 'px';
+      if (tabs && !fitHeight.done) { fitHeight.done = true; setTimeout(function () { window.scrollTo({top: tabs.getBoundingClientRect().top + window.scrollY, behavior: 'smooth'}); }, 60); }
+      return;
+    }
     wrap.style.height = Math.max(380, window.innerHeight - top) + 'px';
   }
 
   function render(sourceId, animate) {
     var root = hierarchy();
-    d3.tree().nodeSize([NODE_W + GAP_X, NODE_H + GAP_Y]).separation(function (a, b) { return a.parent === b.parent ? 1 : 1.15; })(root);
+    if (VERT) {
+      // indented layout: one person per row, each generation a small step inwards
+      var row = 0;
+      root.eachBefore(function (d) { d.x = d.depth * INDENT + NODE_W / 2; d.y = row++ * ROW; });
+    } else {
+      d3.tree().nodeSize([NODE_W + GAP_X, NODE_H + GAP_Y]).separation(function (a, b) { return a.parent === b.parent ? 1 : 1.15; })(root);
+    }
     var nodes = root.descendants(), links = root.links();
     var prev = lastPos, NEW = {};
     nodes.forEach(function (d) { if (rtl) d.x = -d.x; NEW[d.data.id] = {x: d.x, y: d.y}; });
@@ -123,7 +158,11 @@
     var tr = svg.transition().duration(dur).ease(d3.easeCubicOut);
 
     // links
-    var elbow = function (s, t) {
+    var BX = VERT ? -NODE_W / 2 + 12 : 0, bx = rtl ? -BX : BX;
+    var elbow = VERT ? function (s, t) {
+      var sx = s.x + bx, tx = t.x + (rtl ? NODE_W / 2 : -NODE_W / 2);
+      return 'M' + sx + ',' + (s.y + NODE_H / 2) + 'V' + t.y + 'H' + tx;
+    } : function (s, t) {
       var my = s.y + NODE_H / 2 + GAP_Y / 2;
       return 'M' + s.x + ',' + (s.y + NODE_H / 2) + 'V' + my + 'H' + t.x + 'V' + (t.y - NODE_H / 2);
     };
@@ -139,7 +178,7 @@
       .on('click', function (e, d) { e.stopPropagation(); clickNode(d.data.id); });
     enter.append('rect').attr('x', -NODE_W / 2).attr('y', -NODE_H / 2).attr('width', NODE_W).attr('height', NODE_H).attr('rx', 10);
     enter.append('text').attr('class', 'nm').attr('dy', '0.35em').attr('text-anchor', 'middle');
-    var badge = enter.append('g').attr('class', 'badge').attr('transform', 'translate(0,' + (NODE_H / 2) + ')');
+    var badge = enter.append('g').attr('class', 'badge');
     badge.append('circle').attr('r', 10);
     badge.append('text').attr('dy', '0.35em').attr('text-anchor', 'middle');
     var all = enter.merge(node);
@@ -148,12 +187,23 @@
       return 'gn' + (p.s === 'F' ? ' F' : '') + (d.data.id === selected ? ' sel' : '') + (d.data.total ? ' haskids' : '') + (d.data.total && !OPEN[d.data.id] ? ' closed' : '');
     });
     all.select('text.nm').text(function (d) { return fit(DS.plain(DS.P[d.data.id])); });
+    all.select('g.badge').attr('transform', 'translate(' + bx + ',' + (NODE_H / 2) + ')');
+    all.select('rect').attr('x', -NODE_W / 2).attr('width', NODE_W);
     all.select('g.badge').style('display', function (d) { return d.data.total ? null : 'none'; });
     all.select('g.badge text').text(function (d) { return OPEN[d.data.id] ? '−' : '+' + d.data.total; });
     all.transition(tr).style('opacity', 1).attr('transform', function (d) { return 'translate(' + d.x + ',' + d.y + ')'; });
     node.exit().transition(tr).style('opacity', 0)
       .attr('transform', 'translate(' + dst.x + ',' + dst.y + ')').remove();
     lastPos = NEW;
+    placeOld();
+  }
+  function placeOld() {
+    var r0 = lastPos[DS.ROOTS[0]];
+    if (!gOld || !r0) return;
+    var ox = VERT ? (rtl ? r0.x + NODE_W / 2 - PILL_W / 2 : r0.x - NODE_W / 2 + PILL_W / 2) : r0.x;
+    gOld.attr('transform', 'translate(' + ox + ',' + r0.y + ')');
+    var lx = r0.x - ox, py = -NODE_H / 2 - 30;
+    gOld.select('path.oldstem').attr('d', 'M' + lx + ',' + (-NODE_H / 2) + 'V' + (py + 14));
   }
   /* the board's border chain above Mustafa, drawn dashed and labelled as tradition */
   var OLD_STEP = NODE_H + 22, PILL_W = 224;
@@ -161,12 +211,15 @@
     var O = DS.OLD; if (!O || !gOld) return;
     gOld.selectAll('*').remove();
     var ar = DS.LANG === 'ar', n = O.chain.length, py = -NODE_H / 2 - 30;
-    gOld.append('path').attr('class', 'oldlink').attr('d', 'M0,' + (-NODE_H / 2) + 'V' + (py + 14));
+    gOld.append('path').attr('class', 'oldlink oldstem').attr('d', 'M0,' + (-NODE_H / 2) + 'V' + (py + 14));
     var pill = gOld.append('g').attr('class', 'oldpill').attr('transform', 'translate(0,' + py + ')').style('cursor', 'pointer')
       .on('click', function (e) { e.stopPropagation(); oldOpen = !oldOpen; DS.store.set('ds-graph-old', oldOpen ? '1' : '0'); drawOld(true); });
     pill.append('rect').attr('x', -PILL_W / 2).attr('y', -14).attr('width', PILL_W).attr('height', 28).attr('rx', 14);
     pill.append('text').attr('dy', '0.35em').attr('text-anchor', 'middle')
       .text((oldOpen ? '▾ ' : '▴ ') + tt('old') + ' (' + n + ') · ' + tt('oldTag'));
+    try { PILL_W = Math.max(160, Math.ceil(pill.select('text').node().getComputedTextLength()) + 28); } catch (e) {}
+    pill.select('rect').attr('x', -PILL_W / 2).attr('width', PILL_W);
+    placeOld();
     if (!oldOpen) return;
     var top = py - 14 - n * OLD_STEP;
     gOld.insert('path', ':first-child').attr('class', 'oldlink').attr('d', 'M0,' + (py - 14) + 'V' + (top + OLD_STEP - NODE_H / 2));
@@ -211,6 +264,12 @@
   }
   function centerOn(id, animate, k) {
     var p = lastPos[id]; if (!p) return;
+    if (VERT) {
+      var vx = rtl ? W - 14 - (p.x + NODE_W / 2) * k : 14 - (p.x - NODE_W / 2) * k;
+      var vy = (id === DS.ROOTS[0] ? (oldOpen ? H * 0.5 : 70) : H * 0.3) - p.y * k;
+      (animate ? svg.transition().duration(600).ease(d3.easeCubicInOut) : svg).call(zoom.transform, d3.zoomIdentity.translate(vx, vy).scale(k));
+      return;
+    }
     var tf = d3.zoomIdentity.translate(W / 2 - p.x * k, Math.min(H * 0.3, 90) - p.y * k + (id === DS.ROOTS[0] ? 0 : H * 0.15)).scale(k);
     (animate ? svg.transition().duration(600).ease(d3.easeCubicInOut) : svg).call(zoom.transform, tf);
   }
