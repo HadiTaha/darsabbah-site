@@ -194,19 +194,13 @@
     var root = ROOTS[0], nDocs = LIB.items.length;
     $('main').className = 'home';
     $('main').innerHTML =
-      '<section class="hero"><p class="kicker">' + t('welcome') + '</p><h1>' + t('brand') + '</h1><p>' + esc(INTRO[LANG] || '') + '</p>' +
-      '<div class="stats"><div class="stat"><b>' + Object.keys(P).length + '</b>' + t('people') + '</div><div class="stat"><b>' + maxG + '</b>' + t('gens') + '</div><div class="stat"><b>' + nDocs + '</b>' + t('items') + '</div></div></section>' +
-      '<div class="tiles">' +
-      '<a class="tile" href="#/tree"><span class="ico">' + ICON.tree + '</span><b>' + t('tree') + '</b><span>' + t('treeCard') + '</span></a>' +
-      '<a class="tile" href="#/info"><span class="ico">' + ICON.info + '</span><b>' + t('info') + '</b><span>' + t('infoCard') + '</span></a>' +
-      '<a class="tile" href="#/library"><span class="ico">' + ICON.lib + '</span><b>' + t('library') + '</b><span>' + t('libCard') + '</span></a>' +
-      '<a class="tile" href="#/posts"><span class="ico">' + ICON.post + '</span><b>' + t('posts') + '</b><span>' + t('postCard') + '</span></a></div>' +
-      '<a class="card homemap" href="#/info/maps"><div class="dsmap" data-map="palestine-mini"></div><div class="hmtext"><b>' + t('maps') + '</b><span>' + t('mapsCard') + '</span><em>' + t('more') + ' ' + (LANG === 'ar' ? '←' : '→') + '</em></div></a>' +
+      '<section class="hero"><h1>' + t('brand') + '</h1><p>' + esc(INTRO[LANG] || '') + '</p></section>' +
+      '<a class="card homemap" href="#/info/maps"><div class="dsmap" data-map="palestine-mini"></div><div class="hmtext"><b>' + t('maps') + '</b><em>' + t('more') + ' ' + (LANG === 'ar' ? '←' : '→') + '</em></div></a>' +
       '<div class="card"><h2>' + t('latest') + '</h2>' + (POSTS.length ? POSTS.slice(0, 3).map(postCard).join('') : '<p class="muted">' + t('noPosts') + '</p>') +
       (POSTS.length > 3 ? '<p><a href="#/posts">' + t('allPosts') + '</a></p>' : '') + '</div>' +
       '<div class="card homefind"><div><p>' + t('find') + '</p><div class="actions">' + '<a class="btn" href="#/p/' + root + '">' + t('start') + ': ' + esc(nm(P[root])) + '</a>' +
       '<a class="btn" href="#/chart/' + root + '">' + t('chart') + '</a></div></div>' +
-      '<a class="valink" href="#/values"><b>' + t('values') + '</b><span>' + t('valCard') + '</span><em>' + t('more') + ' ' + (LANG === 'ar' ? '←' : '→') + '</em></a></div>' +
+      '<a class="valink" href="#/values"><b>' + t('values') + '</b><em>' + t('more') + ' ' + (LANG === 'ar' ? '←' : '→') + '</em></a></div>' +
       '<p class="muted hideme">' + t('hideMe') + '</p>';
     if (DS.renderMaps) DS.renderMaps();
   }
@@ -233,9 +227,9 @@
     var crumbs = [], c = pg;
     while (c && c.parent) { c = iGet(c.parent); if (c) crumbs.unshift('<a href="#/info/' + esc(c.id) + '">' + esc(iT(c)) + '</a>'); }
     var kids = iKids(pg.id);
-    var cards = kids.length ? '<div class="infocards">' + kids.map(function (k) {
-      return '<a class="infocard" href="#/info/' + esc(k.id) + '"><b dir="auto">' + esc(iT(k)) + '</b><span dir="auto">' + esc(iS(k)) + '</span><em>' + t('more') + ' ' + (LANG === 'ar' ? '←' : '→') + '</em></a>';
-    }).join('') + '</div>' : '';
+    var cards = kids.length ? '<ul class="infolist">' + kids.map(function (k) {
+      return '<li><a href="#/info/' + esc(k.id) + '" dir="auto">' + esc(iT(k)) + '</a></li>';
+    }).join('') + '</ul>' : '';
     var nav = '';
     if (pg !== root && pg.parent) {
       var fl = iFlat(), i = fl.indexOf(pg), pv = fl[i - 1], nx = fl[i + 1];
