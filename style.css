@@ -407,3 +407,4 @@ html[dir=rtl] .gn text.nm{font-family:var(--ar)}
 .infolist li{border-bottom:1px solid var(--line)}
 .infolist a{display:block;padding:12px 4px;font-size:17px;color:var(--ink)}
 .infolist a:hover{color:var(--accent2);text-decoration:none}
+.sub{margin:0 0 20px;max-width:none}
